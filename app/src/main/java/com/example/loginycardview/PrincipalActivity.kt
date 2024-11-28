@@ -54,7 +54,10 @@ class PrincipalActivity : AppCompatActivity() {
         val adapter = CardViewAdapter(professorList)
         recyclerView.adapter = adapter
 
-
+        // Botones flotantes
+        findViewById<FloatingActionButton>(R.id.fab_add).setOnClickListener { showAddDialog() }
+        findViewById<FloatingActionButton>(R.id.fab_update).setOnClickListener { showUpdateDialog() }
+        findViewById<FloatingActionButton>(R.id.fab_delete).setOnClickListener { showDeleteDialog() }
     }
 
 
