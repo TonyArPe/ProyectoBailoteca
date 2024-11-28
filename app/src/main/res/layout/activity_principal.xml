@@ -39,7 +39,7 @@
             android:layout_height="wrap_content"
             android:contentDescription="Actualizar Profesor"
             android:src="@android:drawable/ic_menu_edit"
-            app:backgroundTint="@color/secondaryColor"
+            app:backgroundTint="@color/black"
             app:tint="#03A9F4" />
 
         <!-- Espaciado entre botones -->
@@ -54,7 +54,7 @@
             android:layout_height="wrap_content"
             android:contentDescription="Eliminar Profesor"
             android:src="@android:drawable/ic_delete"
-            app:backgroundTint="@color/errorColor"
+            app:backgroundTint="@color/black"
             app:tint="#FF0101" />
 
         <!-- Espaciado entre botones -->
