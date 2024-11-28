@@ -1,0 +1,10 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#FF4081" />  <!-- Color de fondo (puedes cambiarlo) -->
+    <corners android:radius="50dp" />  <!-- Bordes redondeados -->
+    <size android:height="48dp" /> <!-- Tamaño del botón -->
+    <padding
+        android:left="16dp"
+        android:right="16dp"
+        android:top="12dp"
+        android:bottom="12dp" />
+</shape>

@@ -1,0 +1,16 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Efecto al presionar el botón -->
+    <item android:state_pressed="true">
+        <shape>
+            <solid android:color="#FF4081" /> <!-- Color al presionar -->
+            <corners android:radius="50dp" />
+        </shape>
+    </item>
+    <!-- Efecto cuando no se presiona -->
+    <item>
+        <shape>
+            <solid android:color="#FF80AB" /> <!-- Color de fondo cuando no está presionado -->
+            <corners android:radius="50dp" />
+        </shape>
+    </item>
+</selector>
