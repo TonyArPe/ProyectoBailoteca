@@ -1,5 +1,6 @@
 package com.example.loginycardview
 
+import Professor
 import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
@@ -41,11 +42,46 @@ class PrincipalActivity : AppCompatActivity() {
 
         // Crear lista mutable de profesores
         professorList = mutableListOf(
-            Professor(R.drawable.professor1, "Juan Pérez", "Salsa", true),
-            Professor(R.drawable.professor2, "Ana Gómez", "Bachata", false),
-            Professor(R.drawable.professor3, "Carlos López", "Flamenco", true),
-            Professor(R.drawable.professor4, "María García", "Tango", false),
-            Professor(R.drawable.professor5, "Luis Martínez", "Ballet", true)
+            Professor(
+                R.drawable.professor1,
+                "Juan Pérez",
+                "Salsa",
+                true,
+                "Instructor profesional de salsa con más de 10 años de experiencia.",
+                "juan.perez@example.com"
+            ),
+            Professor(
+                R.drawable.professor2,
+                "Ana Gómez",
+                "Bachata",
+                false,
+                "Especialista en bachata moderna y tradicional.",
+                "ana.gomez@example.com"
+            ),
+            Professor(
+                R.drawable.professor3,
+                "Carlos López",
+                "Flamenco",
+                true,
+                "Bailarín flamenco reconocido internacionalmente.",
+                "carlos.lopez@example.com"
+            ),
+            Professor(
+                R.drawable.professor4,
+                "María García",
+                "Tango",
+                false,
+                "Profesora de tango con experiencia en competiciones internacionales.",
+                "maria.garcia@example.com"
+            ),
+            Professor(
+                R.drawable.professor5,
+                "Luis Martínez",
+                "Ballet",
+                true,
+                "Coreógrafo y maestro de ballet clásico.",
+                "luis.martinez@example.com"
+            )
         )
 
         // Configurar el adapter
@@ -67,13 +103,18 @@ class PrincipalActivity : AppCompatActivity() {
             .setPositiveButton("Añadir") { _, _ ->
                 val name = dialogView.findViewById<EditText>(R.id.editName).text.toString()
                 val specialty = dialogView.findViewById<EditText>(R.id.editSpecialty).text.toString()
+                val description = dialogView.findViewById<EditText>(R.id.editDescription).text.toString()
+                val email = dialogView.findViewById<EditText>(R.id.editEmail).text.toString()
                 val isTopRated = dialogView.findViewById<CheckBox>(R.id.checkboxTopRated).isChecked
+
                 professorList.add(
                     Professor(
                         R.drawable.professor_placeholder,
                         name,
                         specialty,
-                        isTopRated
+                        isTopRated,
+                        description,
+                        email
                     )
                 )
                 adapter.notifyItemInserted(professorList.size - 1)
@@ -94,8 +135,18 @@ class PrincipalActivity : AppCompatActivity() {
                 if (position != null && position in professorList.indices) {
                     val name = dialogView.findViewById<EditText>(R.id.editName).text.toString()
                     val specialty = dialogView.findViewById<EditText>(R.id.editSpecialty).text.toString()
+                    val description = dialogView.findViewById<EditText>(R.id.editDescription).text.toString()
+                    val email = dialogView.findViewById<EditText>(R.id.editEmail).text.toString()
                     val isTopRated = dialogView.findViewById<CheckBox>(R.id.checkboxTopRated).isChecked
-                    professorList[position] = Professor(R.drawable.professor_placeholder, name, specialty, isTopRated)
+
+                    professorList[position] = Professor(
+                        R.drawable.professor_placeholder,
+                        name,
+                        specialty,
+                        isTopRated,
+                        description,
+                        email
+                    )
                     adapter.notifyItemChanged(position)
                 } else {
                     Toast.makeText(this, "Posición inválida", Toast.LENGTH_SHORT).show()

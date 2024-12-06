@@ -1,82 +1,51 @@
-<!-- Rediseño del CardView para la actividad principal -->
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="12dp"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="8dp"
-    app:cardBackgroundColor="@color/lightBackground">
+    android:orientation="vertical"
+    android:padding="16dp">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
+    <ImageView
+        android:id="@+id/professorImage"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:scaleType="centerCrop" />
+
+    <TextView
+        android:id="@+id/professorName"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:text="Nombre del Profesor"
+        android:textSize="16sp" />
 
-        <ImageView
-            android:id="@+id/professorImage"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_alignParentStart="true"
-            android:layout_marginEnd="16dp"
-            android:background="@drawable/circle_background"
-            android:scaleType="centerCrop"
-            android:adjustViewBounds="true"
-            android:src="@drawable/professor_placeholder" />
+    <TextView
+        android:id="@+id/professorSpecialty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Especialidad" />
 
+    <RatingBar
+        android:id="@+id/professorRating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:numStars="5"
+        android:rating="3.0" />
 
-        <!-- Nombre del profesor -->
-        <TextView
-            android:id="@+id/professorName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/professorImage"
-            android:layout_marginStart="12dp"
-            android:text="Nombre del Profesor"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/black" />
+    <Button
+        android:id="@+id/buttonContact"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Contactar" />
 
-        <!-- Especialidad del profesor -->
-        <TextView
-            android:id="@+id/professorSpecialty"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/professorName"
-            android:layout_toEndOf="@id/professorImage"
-            android:layout_marginTop="4dp"
-            android:layout_marginStart="12dp"
-            android:text="Especialidad: Salsa"
-            android:textSize="16sp"
-            android:textColor="@android:color/darker_gray" />
+    <ImageButton
+        android:id="@+id/buttonExpand"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@android:drawable/ic_menu_sort_by_size" />
 
-        <!-- Rating del profesor -->
-        <RatingBar
-            android:id="@+id/professorRating"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/professorSpecialty"
-            android:layout_toEndOf="@id/professorImage"
-            android:layout_marginTop="8dp"
-            android:numStars="5"
-            android:rating="4.0"
-            android:stepSize="0.5"
-            android:isIndicator="true"
-            android:scaleX="0.8"
-            android:scaleY="0.8" />
-
-        <!-- Botón de contacto -->
-        <Button
-            android:id="@+id/buttonContact"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_below="@id/professorRating"
-            android:layout_marginTop="8dp"
-            android:backgroundTint="@color/primaryColor"
-            android:text="Contactar"
-            android:textColor="@android:color/white" />
-
-    </RelativeLayout>
-</androidx.cardview.widget.CardView>
+    <TextView
+        android:id="@+id/expandedDetails"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Detalles Expandidos"
+        android:visibility="gone" />
+</LinearLayout>

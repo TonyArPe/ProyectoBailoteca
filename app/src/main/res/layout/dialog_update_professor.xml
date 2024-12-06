@@ -1,30 +1,61 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="16dp">
 
+    <!-- Campo para la posición -->
     <EditText
         android:id="@+id/editPosition"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Posición del Profesor" />
+        android:hint="Posición del Profesor"
+        android:inputType="number"
+        android:padding="8dp" />
 
+    <!-- Campo para el nombre -->
     <EditText
         android:id="@+id/editName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Nuevo Nombre" />
+        android:hint="Nuevo Nombre"
+        android:inputType="textPersonName"
+        android:padding="8dp" />
 
+    <!-- Campo para la especialidad -->
     <EditText
         android:id="@+id/editSpecialty"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Nueva Especialidad" />
+        android:hint="Nueva Especialidad"
+        android:inputType="text"
+        android:padding="8dp" />
 
+    <!-- Campo para la descripción -->
+    <EditText
+        android:id="@+id/editDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Nueva Descripción"
+        android:inputType="textMultiLine"
+        android:minLines="3"
+        android:padding="8dp" />
+
+    <!-- Campo para el correo -->
+    <EditText
+        android:id="@+id/editEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Nuevo Correo Electrónico"
+        android:inputType="textEmailAddress"
+        android:padding="8dp" />
+
+    <!-- Checkbox para top-rated -->
     <CheckBox
         android:id="@+id/checkboxTopRated"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="¿Es destacado?" />
+        android:text="¿Es destacado?"
+        android:padding="8dp" />
 </LinearLayout>

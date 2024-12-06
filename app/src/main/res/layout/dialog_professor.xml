@@ -1,24 +1,53 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="16dp">
 
+    <!-- Campo para el nombre -->
     <EditText
         android:id="@+id/editName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Nombre del Profesor" />
+        android:hint="Nombre"
+        android:inputType="textPersonName"
+        android:padding="8dp" />
 
+    <!-- Campo para la especialidad -->
     <EditText
         android:id="@+id/editSpecialty"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Especialidad" />
+        android:hint="Especialidad"
+        android:inputType="text"
+        android:padding="8dp" />
 
+    <!-- Campo para la descripción -->
+    <EditText
+        android:id="@+id/editDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Descripción"
+        android:inputType="textMultiLine"
+        android:minLines="3"
+        android:padding="8dp" />
+
+    <!-- Campo para el email -->
+    <EditText
+        android:id="@+id/editEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Correo Electrónico"
+        android:inputType="textEmailAddress"
+        android:padding="8dp" />
+
+    <!-- Checkbox para top-rated -->
     <CheckBox
         android:id="@+id/checkboxTopRated"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="¿Es destacado?" />
+        android:text="¿Destacado?"
+        android:padding="8dp" />
 </LinearLayout>
