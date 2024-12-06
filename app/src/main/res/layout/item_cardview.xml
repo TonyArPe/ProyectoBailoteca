@@ -4,6 +4,15 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <TextView
+        android:id="@+id/professorPosition"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Posición"
+        android:textSize="14sp"
+        android:textStyle="italic"
+        android:visibility="gone" />
+
     <ImageView
         android:id="@+id/professorImage"
         android:layout_width="100dp"
@@ -48,4 +57,19 @@
         android:layout_height="wrap_content"
         android:text="Detalles Expandidos"
         android:visibility="gone" />
+
+    <!-- Botones CRUD -->
+    <ImageButton
+        android:id="@+id/buttonEdit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="Editar"
+        android:src="@android:drawable/ic_menu_edit" />
+
+    <ImageButton
+        android:id="@+id/buttonDelete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="Eliminar"
+        android:src="@android:drawable/ic_menu_delete" />
 </LinearLayout>
