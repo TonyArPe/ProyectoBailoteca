@@ -3,89 +3,93 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="@color/cardBackground"
+    android:elevation="4dp">
 
-    <TextView
-        android:id="@+id/professorPosition"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Posición"
-        android:textSize="14sp"
-        android:textStyle="italic"
-        android:visibility="gone" />
-
+    <!-- Imagen del Profesor -->
     <ImageView
         android:id="@+id/professorImage"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:scaleType="centerCrop" />
+        android:scaleType="centerCrop"
+        android:layout_gravity="center" />
 
+    <!-- Nombre del Profesor -->
     <TextView
         android:id="@+id/professorName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Nombre del Profesor"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        android:textColor="@color/primaryColor"
+        android:layout_marginTop="8dp" />
 
+    <!-- Especialidad -->
     <TextView
         android:id="@+id/professorSpecialty"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Especialidad" />
+        android:text="Especialidad"
+        android:textSize="14sp"
+        android:textColor="@color/textGrayColor"
+        android:layout_marginTop="4dp" />
 
+    <!-- RatingBar para la valoración -->
     <RatingBar
         android:id="@+id/professorRating"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:numStars="5"
-        android:rating="3.0" />
+        android:rating="3.0"
+        android:layout_marginTop="8dp"
+        android:stepSize="0.5"
+        android:isIndicator="true"
+        android:layout_gravity="center" />
 
+    <!-- Botón para contactar -->
     <Button
         android:id="@+id/buttonContact"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Contactar"
-        app:icon="@android:drawable/sym_action_email" />
+        android:backgroundTint="@color/buttonColor"
+        android:textColor="@color/buttonTextColor"
+        android:layout_marginTop="8dp" />
 
+    <!-- Botones para expandir, editar, eliminar -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="8dp">
 
         <ImageButton
             android:id="@+id/buttonExpand"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="#2196F3"
             android:src="@android:drawable/ic_menu_sort_by_size"
-            android:tint="#000000" />
+            android:backgroundTint="@color/primaryColor"
+            android:contentDescription="Expandir"
+            app:tint="@android:color/white" />
 
         <ImageButton
             android:id="@+id/buttonEdit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="#009688"
-            android:contentDescription="Editar"
             android:src="@android:drawable/ic_menu_edit"
-            android:tint="#CDDC39" />
+            android:backgroundTint="@color/secondaryColor"
+            android:contentDescription="Editar"
+            app:tint="@android:color/white" />
 
         <ImageButton
             android:id="@+id/buttonDelete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="#F44336"
-            android:contentDescription="Eliminar"
             android:src="@android:drawable/ic_menu_delete"
-            android:tint="#000000" />
+            android:backgroundTint="@color/dangerColor"
+            android:contentDescription="Eliminar"
+            app:tint="@android:color/white" />
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/expandedDetails"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Detalles Expandidos"
-        android:visibility="gone" />
-
-    <!-- Botones CRUD -->
-
 </LinearLayout>

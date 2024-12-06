@@ -3,8 +3,22 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="light_bg_color">#FFFFFF</color>
-    <color name="primaryColor">#FF5722</color>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="lightBackground">#F5F5F5</color>
+    <!-- Colores primarios -->
+    <color name="primaryColor">#7C4DFF</color> <!-- Morado suave -->
+    <color name="secondaryColor">#AB47BC</color> <!-- Morado más oscuro/lila -->
+    <color name="accentColor">#9C27B0</color> <!-- Lila más intenso -->
+    <color name="backgroundColor">#F3E5F5</color> <!-- Fondo lila claro -->
 
+    <!-- Colores para botones -->
+    <color name="buttonColor">#8E24AA</color> <!-- Morado fuerte para botones -->
+    <color name="buttonTextColor">#FFFFFF</color> <!-- Blanco para el texto del botón -->
+
+    <!-- Colores de texto -->
+    <color name="textPrimaryColor">#4A148C</color> <!-- Texto principal morado oscuro -->
+    <color name="textSecondaryColor">#9C27B0</color> <!-- Texto secundario morado claro -->
+    <color name="textGrayColor">#B39DDB</color> <!-- Gris lila -->
+
+    <!-- Colores de fondo -->
+    <color name="cardBackground">#EDE7F6</color> <!-- Fondo de tarjeta lila claro -->
+    <color name="dangerColor">#D32F2F</color> <!-- Rojo para eliminar -->
 </resources>
