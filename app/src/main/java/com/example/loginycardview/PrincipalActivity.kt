@@ -40,14 +40,14 @@ class PrincipalActivity : AppCompatActivity() {
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        // Crear lista mutable de profesores
+// Crear lista mutable de profesores
         professorList = mutableListOf(
             Professor(
                 R.drawable.professor1,
                 "Juan Pérez",
                 "Salsa",
                 true,
-                "Instructor profesional de salsa con más de 10 años de experiencia.",
+                "Instructor profesional de salsa con más de 10 años de experiencia en escenarios internacionales.",
                 "juan.perez@example.com"
             ),
             Professor(
@@ -55,7 +55,7 @@ class PrincipalActivity : AppCompatActivity() {
                 "Ana Gómez",
                 "Bachata",
                 false,
-                "Especialista en bachata moderna y tradicional.",
+                "Especialista en bachata moderna y tradicional, con un enfoque en la musicalidad y la técnica.",
                 "ana.gomez@example.com"
             ),
             Professor(
@@ -63,7 +63,7 @@ class PrincipalActivity : AppCompatActivity() {
                 "Carlos López",
                 "Flamenco",
                 true,
-                "Bailarín flamenco reconocido internacionalmente.",
+                "Bailarín flamenco reconocido internacionalmente, con una amplia trayectoria en festivales de flamenco.",
                 "carlos.lopez@example.com"
             ),
             Professor(
@@ -71,7 +71,7 @@ class PrincipalActivity : AppCompatActivity() {
                 "María García",
                 "Tango",
                 false,
-                "Profesora de tango con experiencia en competiciones internacionales.",
+                "Profesora de tango argentino con experiencia en competiciones y espectáculos internacionales.",
                 "maria.garcia@example.com"
             ),
             Professor(
@@ -79,10 +79,35 @@ class PrincipalActivity : AppCompatActivity() {
                 "Luis Martínez",
                 "Ballet",
                 true,
-                "Coreógrafo y maestro de ballet clásico.",
+                "Coreógrafo y maestro de ballet clásico, con un enfoque en la técnica y el desarrollo artístico.",
                 "luis.martinez@example.com"
+            ),
+            Professor(
+                R.drawable.professor6,
+                "Isabel Ruiz",
+                "Contemporáneo",
+                true,
+                "Especialista en danza contemporánea, con una gran experiencia en improvisación y coreografía experimental.",
+                "isabel.ruiz@example.com"
+            ),
+            Professor(
+                R.drawable.professor7,
+                "Miguel Sánchez",
+                "Hip Hop",
+                false,
+                "Bailarín y coreógrafo de hip hop con más de 5 años enseñando en academias y campeonatos.",
+                "miguel.sanchez@example.com"
+            ),
+            Professor(
+                R.drawable.professor8,
+                "Daniel López",
+                "Kizomba",
+                true,
+                "Instructor de kizomba con experiencia en las mejores escuelas de baile y festivales de kizomba.",
+                "daniel.lopez@example.com"
             )
         )
+
 
         // Configurar el adapter
         adapter = CardViewAdapter(professorList)

@@ -28,7 +28,6 @@ class CardViewAdapter(private val professors: MutableList<Professor>) :
         val contactButton: Button = itemView.findViewById(R.id.buttonContact)
         val expandButton: ImageButton = itemView.findViewById(R.id.buttonExpand)
         val expandedDetail: TextView = itemView.findViewById(R.id.expandedDetails)
-        val position: TextView = itemView.findViewById(R.id.professorPosition)
         val buttonEdit: ImageButton = itemView.findViewById(R.id.buttonEdit)
         val buttonDelete: ImageButton = itemView.findViewById(R.id.buttonDelete)
     }
@@ -43,8 +42,9 @@ class CardViewAdapter(private val professors: MutableList<Professor>) :
         val professor = professors[position]
 
         // Mostrar la posición
-        holder.position.text = "Posición: ${position + 1}" // Se muestra el índice +1 (para empezar desde 1)
-        holder.position.visibility = View.VISIBLE
+        holder.name.text = professor.name
+        holder.specialty.text = "Especialidad: ${professor.specialty}"
+        holder.rating.rating = if (professor.isTopRated) 5.0f else 3.0f
 
         // Glide para cargar la imagen
         Glide.with(holder.itemView.context)
@@ -52,9 +52,16 @@ class CardViewAdapter(private val professors: MutableList<Professor>) :
             .placeholder(R.drawable.professor_placeholder)
             .into(holder.image)
 
-        holder.name.text = professor.name
-        holder.specialty.text = "Especialidad: ${professor.specialty}"
-        holder.rating.rating = if (professor.isTopRated) 5.0f else 3.0f
+        // Mostrar la descripción cuando se expanda
+        holder.expandButton.setOnClickListener {
+            val isVisible = holder.expandedDetail.visibility == View.VISIBLE
+            if (isVisible) {
+                holder.expandedDetail.visibility = View.GONE
+            } else {
+                holder.expandedDetail.text = professor.description
+                holder.expandedDetail.visibility = View.VISIBLE
+            }
+        }
 
         // Manejo del botón de contacto
         holder.contactButton.setOnClickListener {
@@ -66,22 +73,16 @@ class CardViewAdapter(private val professors: MutableList<Professor>) :
             holder.itemView.context.startActivity(Intent.createChooser(intent, "Enviar correo"))
         }
 
-        // Expansión del ítem
-        holder.expandButton.setOnClickListener {
-            val isVisible = holder.expandedDetail.visibility == View.VISIBLE
-            holder.expandedDetail.visibility = if (isVisible) View.GONE else View.VISIBLE
-        }
-
         // Botón de Editar
         holder.buttonEdit.setOnClickListener {
-            // Llamar a la función para editar este profesor
+            // Llamar a la función para editar este profesor, sin incluir la posición
             showEditDialog(holder.itemView.context, position)
         }
 
         // Botón de Eliminar
         holder.buttonDelete.setOnClickListener {
             // Llamar a la función para eliminar este profesor
-            showDeleteDialog(holder.itemView.context, position)
+            deleteProfessor(position)
         }
     }
 
@@ -91,59 +92,38 @@ class CardViewAdapter(private val professors: MutableList<Professor>) :
     private fun showEditDialog(context: Context, position: Int) {
         val professor = professors[position]
         val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_update_professor, null)
-
-        // Rellenar los campos del diálogo con los datos actuales
-        val editName = dialogView.findViewById<EditText>(R.id.editName)
-        val editSpecialty = dialogView.findViewById<EditText>(R.id.editSpecialty)
-        val editDescription = dialogView.findViewById<EditText>(R.id.editDescription)
-        val editEmail = dialogView.findViewById<EditText>(R.id.editEmail)
-        val checkboxTopRated = dialogView.findViewById<CheckBox>(R.id.checkboxTopRated)
-
-        editName.setText(professor.name)
-        editSpecialty.setText(professor.specialty)
-        editDescription.setText(professor.description)
-        editEmail.setText(professor.email)
-        checkboxTopRated.isChecked = professor.isTopRated
-
         val dialog = AlertDialog.Builder(context)
             .setTitle("Actualizar Profesor")
             .setView(dialogView)
             .setPositiveButton("Actualizar") { _, _ ->
-                // Actualizar los datos del profesor
-                professor.name = editName.text.toString()
-                professor.specialty = editSpecialty.text.toString()
-                professor.description = editDescription.text.toString()
-                professor.email = editEmail.text.toString()
-                professor.isTopRated = checkboxTopRated.isChecked
+                val name = dialogView.findViewById<EditText>(R.id.editName).text.toString()
+                val specialty = dialogView.findViewById<EditText>(R.id.editSpecialty).text.toString()
+                val description = dialogView.findViewById<EditText>(R.id.editDescription).text.toString()
+                val email = dialogView.findViewById<EditText>(R.id.editEmail).text.toString()
+                val isTopRated = dialogView.findViewById<CheckBox>(R.id.checkboxTopRated).isChecked
 
-                // Notificar al adapter que los datos han cambiado
+                professors[position] = Professor(
+                    professor.imageResId,
+                    name,
+                    specialty,
+                    isTopRated,
+                    description,
+                    email
+                )
                 notifyItemChanged(position)
             }
             .setNegativeButton("Cancelar", null)
             .create()
-
         dialog.show()
     }
 
-    // Función para mostrar el diálogo de eliminar profesor
-    private fun showDeleteDialog(context: Context, position: Int) {
-        val professor = professors[position]
-
-        val dialog = AlertDialog.Builder(context)
-            .setTitle("Eliminar Profesor")
-            .setMessage("¿Estás seguro de que quieres eliminar a ${professor.name}?")
-            .setPositiveButton("Eliminar") { _, _ ->
-                // Eliminar el profesor de la lista
-                professors.removeAt(position)
-                notifyItemRemoved(position)
-                notifyItemRangeChanged(position, professors.size)
-            }
-            .setNegativeButton("Cancelar", null)
-            .create()
-
-        dialog.show()
+    // Función para eliminar un profesor
+    private fun deleteProfessor(position: Int) {
+        professors.removeAt(position)
+        notifyItemRemoved(position)
     }
 }
+
 
 
 
