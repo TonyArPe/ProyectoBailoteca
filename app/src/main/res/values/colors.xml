@@ -4,5 +4,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="light_bg_color">#FFFFFF</color>
     <color name="primaryColor">#FF5722</color>
-    <color name="lightBackground">#F5F5F5</color> <!-- Gris claro -->
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="lightBackground">#F5F5F5</color>
+
 </resources>

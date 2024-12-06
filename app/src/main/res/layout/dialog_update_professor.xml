@@ -5,15 +5,6 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <!-- Campo para la posición -->
-    <EditText
-        android:id="@+id/editPosition"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Posición del Profesor"
-        android:inputType="number"
-        android:padding="8dp" />
-
     <!-- Campo para el nombre -->
     <EditText
         android:id="@+id/editName"

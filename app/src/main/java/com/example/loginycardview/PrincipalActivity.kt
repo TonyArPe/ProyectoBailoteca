@@ -113,10 +113,10 @@ class PrincipalActivity : AppCompatActivity() {
         adapter = CardViewAdapter(professorList)
         recyclerView.adapter = adapter
 
+
         // Botones flotantes
         findViewById<FloatingActionButton>(R.id.fab_add).setOnClickListener { showAddDialog() }
-        findViewById<FloatingActionButton>(R.id.fab_update).setOnClickListener { showUpdateDialog() }
-        findViewById<FloatingActionButton>(R.id.fab_delete).setOnClickListener { showDeleteDialog() }
+
     }
 
     // Función para mostrar el diálogo de añadir profesor
@@ -143,60 +143,6 @@ class PrincipalActivity : AppCompatActivity() {
                     )
                 )
                 adapter.notifyItemInserted(professorList.size - 1)
-            }
-            .setNegativeButton("Cancelar", null)
-            .create()
-        dialog.show()
-    }
-
-    // Función para mostrar el diálogo de actualizar profesor
-    private fun showUpdateDialog() {
-        val dialogView = layoutInflater.inflate(R.layout.dialog_update_professor, null)
-        val dialog = AlertDialog.Builder(this)
-            .setTitle("Actualizar Profesor")
-            .setView(dialogView)
-            .setPositiveButton("Actualizar") { _, _ ->
-                val position = dialogView.findViewById<EditText>(R.id.editPosition).text.toString().toIntOrNull()
-                if (position != null && position in professorList.indices) {
-                    val name = dialogView.findViewById<EditText>(R.id.editName).text.toString()
-                    val specialty = dialogView.findViewById<EditText>(R.id.editSpecialty).text.toString()
-                    val description = dialogView.findViewById<EditText>(R.id.editDescription).text.toString()
-                    val email = dialogView.findViewById<EditText>(R.id.editEmail).text.toString()
-                    val isTopRated = dialogView.findViewById<CheckBox>(R.id.checkboxTopRated).isChecked
-
-                    professorList[position] = Professor(
-                        R.drawable.professor_placeholder,
-                        name,
-                        specialty,
-                        isTopRated,
-                        description,
-                        email
-                    )
-                    adapter.notifyItemChanged(position)
-                } else {
-                    Toast.makeText(this, "Posición inválida", Toast.LENGTH_SHORT).show()
-                }
-            }
-            .setNegativeButton("Cancelar", null)
-            .create()
-        dialog.show()
-    }
-
-    // Función para mostrar el diálogo de eliminar profesor
-    private fun showDeleteDialog() {
-        val editText = EditText(this).apply { hint = "Posición" }
-        val dialog = AlertDialog.Builder(this)
-            .setTitle("Eliminar Profesor")
-            .setMessage("Ingrese la posición del profesor a eliminar:")
-            .setView(editText)
-            .setPositiveButton("Eliminar") { _, _ ->
-                val position = editText.text.toString().toIntOrNull()
-                if (position != null && position in professorList.indices) {
-                    professorList.removeAt(position)
-                    adapter.notifyItemRemoved(position)
-                } else {
-                    Toast.makeText(this, "Posición inválida", Toast.LENGTH_SHORT).show()
-                }
             }
             .setNegativeButton("Cancelar", null)
             .create()

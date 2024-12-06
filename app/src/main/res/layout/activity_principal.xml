@@ -22,6 +22,7 @@
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
+
     </LinearLayout>
 
     <!-- Botones flotantes -->
@@ -31,36 +32,6 @@
         android:layout_gravity="bottom|end"
         android:orientation="vertical"
         android:padding="16dp">
-
-        <!-- Botón para actualizar -->
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_update"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="Actualizar Profesor"
-            android:src="@android:drawable/ic_menu_edit"
-            app:backgroundTint="@color/black"
-            app:tint="#03A9F4" />
-
-        <!-- Espaciado entre botones -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="8dp" />
-
-        <!-- Botón para borrar -->
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_delete"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="Eliminar Profesor"
-            android:src="@android:drawable/ic_delete"
-            app:backgroundTint="@color/black"
-            app:tint="#FF0101" />
-
-        <!-- Espaciado entre botones -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="8dp" />
 
         <!-- Botón para añadir -->
         <com.google.android.material.floatingactionbutton.FloatingActionButton

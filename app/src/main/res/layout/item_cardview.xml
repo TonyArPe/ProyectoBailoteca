@@ -1,4 +1,5 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -43,13 +44,40 @@
         android:id="@+id/buttonContact"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Contactar" />
+        android:text="Contactar"
+        app:icon="@android:drawable/sym_action_email" />
 
-    <ImageButton
-        android:id="@+id/buttonExpand"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@android:drawable/ic_menu_sort_by_size" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/buttonExpand"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#2196F3"
+            android:src="@android:drawable/ic_menu_sort_by_size"
+            android:tint="#000000" />
+
+        <ImageButton
+            android:id="@+id/buttonEdit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#009688"
+            android:contentDescription="Editar"
+            android:src="@android:drawable/ic_menu_edit"
+            android:tint="#CDDC39" />
+
+        <ImageButton
+            android:id="@+id/buttonDelete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#F44336"
+            android:contentDescription="Eliminar"
+            android:src="@android:drawable/ic_menu_delete"
+            android:tint="#000000" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/expandedDetails"
@@ -59,17 +87,5 @@
         android:visibility="gone" />
 
     <!-- Botones CRUD -->
-    <ImageButton
-        android:id="@+id/buttonEdit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="Editar"
-        android:src="@android:drawable/ic_menu_edit" />
 
-    <ImageButton
-        android:id="@+id/buttonDelete"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="Eliminar"
-        android:src="@android:drawable/ic_menu_delete" />
 </LinearLayout>

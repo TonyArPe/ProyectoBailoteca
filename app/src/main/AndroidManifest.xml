@@ -12,7 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LoginYCardView"
         tools:targetApi="31">
-
+        <activity
+            android:name=".ProfessorProfileActivity"
+            android:exported="false" />
         <activity
             android:name=".LoginActivity"
             android:exported="true">
@@ -28,7 +30,6 @@
         <activity
             android:name=".PrincipalActivity"
             android:exported="false" />
-
     </application>
 
 </manifest>

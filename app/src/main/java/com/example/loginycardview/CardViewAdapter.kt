@@ -14,6 +14,7 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
@@ -27,7 +28,6 @@ class CardViewAdapter(private val professors: MutableList<Professor>) :
         val rating: RatingBar = itemView.findViewById(R.id.professorRating)
         val contactButton: Button = itemView.findViewById(R.id.buttonContact)
         val expandButton: ImageButton = itemView.findViewById(R.id.buttonExpand)
-        val expandedDetail: TextView = itemView.findViewById(R.id.expandedDetails)
         val buttonEdit: ImageButton = itemView.findViewById(R.id.buttonEdit)
         val buttonDelete: ImageButton = itemView.findViewById(R.id.buttonDelete)
     }
@@ -41,29 +41,23 @@ class CardViewAdapter(private val professors: MutableList<Professor>) :
     override fun onBindViewHolder(holder: ProfessorViewHolder, position: Int) {
         val professor = professors[position]
 
-        // Mostrar la posición
         holder.name.text = professor.name
         holder.specialty.text = "Especialidad: ${professor.specialty}"
         holder.rating.rating = if (professor.isTopRated) 5.0f else 3.0f
 
-        // Glide para cargar la imagen
         Glide.with(holder.itemView.context)
             .load(professor.imageResId)
             .placeholder(R.drawable.professor_placeholder)
             .into(holder.image)
 
-        // Mostrar la descripción cuando se expanda
+        // Abrir la Activity de detalles al hacer clic en expandir
         holder.expandButton.setOnClickListener {
-            val isVisible = holder.expandedDetail.visibility == View.VISIBLE
-            if (isVisible) {
-                holder.expandedDetail.visibility = View.GONE
-            } else {
-                holder.expandedDetail.text = professor.description
-                holder.expandedDetail.visibility = View.VISIBLE
-            }
+            val intent = Intent(holder.itemView.context, ProfessorProfileActivity::class.java)
+            intent.putExtra("professor", professor)
+            holder.itemView.context.startActivity(intent)
         }
 
-        // Manejo del botón de contacto
+        // Botón de contacto
         holder.contactButton.setOnClickListener {
             val intent = Intent(Intent.ACTION_SEND)
             intent.type = "message/rfc822"
@@ -75,20 +69,17 @@ class CardViewAdapter(private val professors: MutableList<Professor>) :
 
         // Botón de Editar
         holder.buttonEdit.setOnClickListener {
-            // Llamar a la función para editar este profesor, sin incluir la posición
             showEditDialog(holder.itemView.context, position)
         }
 
         // Botón de Eliminar
         holder.buttonDelete.setOnClickListener {
-            // Llamar a la función para eliminar este profesor
-            deleteProfessor(position)
+            showDeleteConfirmationDialog(holder.itemView.context, position)
         }
     }
 
     override fun getItemCount(): Int = professors.size
 
-    // Función para mostrar el diálogo de actualizar profesor
     private fun showEditDialog(context: Context, position: Int) {
         val professor = professors[position]
         val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_update_professor, null)
@@ -117,12 +108,20 @@ class CardViewAdapter(private val professors: MutableList<Professor>) :
         dialog.show()
     }
 
-    // Función para eliminar un profesor
-    private fun deleteProfessor(position: Int) {
-        professors.removeAt(position)
-        notifyItemRemoved(position)
+    private fun showDeleteConfirmationDialog(context: Context, position: Int) {
+        val dialog = AlertDialog.Builder(context)
+            .setTitle("Eliminar Profesor")
+            .setMessage("¿Estás seguro de que deseas eliminar este profesor?")
+            .setPositiveButton("Sí") { _, _ ->
+                professors.removeAt(position)
+                notifyItemRemoved(position)
+            }
+            .setNegativeButton("No", null)
+            .create()
+        dialog.show()
     }
 }
+
 
 
 
