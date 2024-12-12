@@ -4,43 +4,63 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="#FFFFFF"
+    android:gravity="center">
 
+    <!-- Campo Nombre de Usuario -->
     <EditText
         android:id="@+id/editTextUsernameRegister"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:hint="Nombre" />
+        android:hint="Nombre de Usuario"
+        android:inputType="textPersonName"
+        android:padding="12dp"
+        android:background="@drawable/input_background"
+        android:layout_marginBottom="12dp" />
 
+    <!-- Campo Email -->
     <EditText
         android:id="@+id/editTextEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Email"
+        android:hint="Correo Electrónico"
         android:inputType="textEmailAddress"
-        android:layout_marginBottom="8dp" />
+        android:padding="12dp"
+        android:background="@drawable/input_background"
+        android:layout_marginBottom="12dp" />
 
+    <!-- Campo Contraseña -->
     <EditText
         android:id="@+id/editTextPasswordRegister"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
         android:hint="Contraseña"
-        android:inputType="textPassword" />
+        android:inputType="textPassword"
+        android:padding="12dp"
+        android:background="@drawable/input_background"
+        android:layout_marginBottom="16dp" />
 
+    <!-- Botón de Guardar -->
     <Button
         android:id="@+id/buttonSave"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:text="Guardar"
-        app:icon="@android:drawable/ic_menu_save" />
+        android:text="Registrar"
+        android:textSize="16sp"
+        android:textColor="#FFFFFF"
+        android:background="@drawable/btn_register_background"
+        android:padding="12dp"
+        android:layout_marginBottom="16dp" />
 
+    <!-- Botón de Cancelar -->
     <Button
         android:id="@+id/buttonCancel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Cancelar"
-        app:icon="@android:drawable/ic_menu_revert" />
+        android:textSize="16sp"
+        android:textColor="#FFFFFF"
+        android:background="@drawable/btn_cancel_background"
+        android:padding="12dp" />
 </LinearLayout>
