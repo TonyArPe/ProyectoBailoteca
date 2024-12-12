@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "144852073628",
+    "project_id": "usuariosbailoteca",
+    "storage_bucket": "usuariosbailoteca.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:144852073628:android:4bb92515710e7f35dc8159",
+        "android_client_info": {
+          "package_name": "com.example.loginycardview"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBd_VMN7wBOGMzQ5FDqeuFJ-d1DfeNUDUo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
