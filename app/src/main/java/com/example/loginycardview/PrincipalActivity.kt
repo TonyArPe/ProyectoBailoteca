@@ -3,6 +3,7 @@ package com.example.loginycardview
 import Professor
 import android.app.AlertDialog
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.widget.CheckBox
 import android.widget.EditText
@@ -11,6 +12,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class PrincipalActivity : AppCompatActivity() {
@@ -116,6 +118,9 @@ class PrincipalActivity : AppCompatActivity() {
 
         // Botones flotantes
         findViewById<FloatingActionButton>(R.id.fab_add).setOnClickListener { showAddDialog() }
+        findViewById<MaterialButton>(R.id.btn_logout).setOnClickListener {
+            logout()
+        }
 
     }
 
@@ -147,5 +152,17 @@ class PrincipalActivity : AppCompatActivity() {
             .setNegativeButton("Cancelar", null)
             .create()
         dialog.show()
+    }
+
+    // Función para cerrar sesión
+    private fun logout() {
+        val sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        with(sharedPref.edit()) {
+            clear() // Limpiar todos los datos del usuario
+            apply()
+        }
+        val intent = Intent(this, LoginActivity::class.java)
+        startActivity(intent)
+        finish() // Finalizar la actividad actual
     }
 }
