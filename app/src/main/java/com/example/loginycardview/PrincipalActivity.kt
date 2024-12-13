@@ -12,8 +12,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.button.MaterialButton
 
 class PrincipalActivity : AppCompatActivity() {
 
@@ -26,7 +26,7 @@ class PrincipalActivity : AppCompatActivity() {
 
         // Obtener el nombre de usuario desde SharedPreferences
         val sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        val username = sharedPref.getString("username", null)
+        val username = sharedPref.getString("username", "")
 
         // Verificar que el valor no sea null
         if (username != null) {
@@ -42,7 +42,7 @@ class PrincipalActivity : AppCompatActivity() {
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-// Crear lista mutable de profesores
+        // Crear lista mutable de profesores
         professorList = mutableListOf(
             Professor(
                 R.drawable.professor1,
@@ -110,18 +110,17 @@ class PrincipalActivity : AppCompatActivity() {
             )
         )
 
-
         // Configurar el adapter
         adapter = CardViewAdapter(professorList)
         recyclerView.adapter = adapter
 
-
         // Botones flotantes
         findViewById<FloatingActionButton>(R.id.fab_add).setOnClickListener { showAddDialog() }
+
+        // Botón de Logout
         findViewById<MaterialButton>(R.id.btn_logout).setOnClickListener {
             logout()
         }
-
     }
 
     // Función para mostrar el diálogo de añadir profesor
@@ -154,15 +153,22 @@ class PrincipalActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    // Función para cerrar sesión
     private fun logout() {
         val sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
         with(sharedPref.edit()) {
-            clear() // Limpiar todos los datos del usuario
+            clear() // Limpia todos los datos
             apply()
         }
+        Toast.makeText(this, "Sesión cerrada", Toast.LENGTH_SHORT).show()
+
+        // Navegar al Login
         val intent = Intent(this, LoginActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
-        finish() // Finalizar la actividad actual
+        finish()
     }
+
 }
+
+
+

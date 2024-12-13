@@ -1,5 +1,6 @@
 package com.example.loginycardview
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -35,6 +36,16 @@ class RegisterActivity : AppCompatActivity() {
 
             auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
+                    // Al registrar al usuario, guardamos el nombre de usuario en SharedPreferences
+                    val sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+                    with(sharedPref.edit()) {
+                        putString("username", username) // Guardar el nombre de usuario
+                        putString("email", email) // Guardar el email
+                        putBoolean("isLoggedIn", true) // Indicar que el usuario está logueado
+                        apply()
+                    }
+
+                    // Enviar correo de verificación
                     auth.currentUser?.sendEmailVerification()?.addOnCompleteListener {
                         if (it.isSuccessful) {
                             Toast.makeText(this, "Registro exitoso. Verifica tu correo", Toast.LENGTH_SHORT).show()
@@ -49,6 +60,7 @@ class RegisterActivity : AppCompatActivity() {
                 }
             }
         }
+
 
         buttonCancel.setOnClickListener {
             startActivity(Intent(this, LoginActivity::class.java))
