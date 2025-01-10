@@ -1,6 +1,6 @@
-package com.example.loginycardview
+package com.example.loginycardview.ui
 
-import Professor
+import com.example.loginycardview.data.Professor
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
+import com.example.loginycardview.R
 
 class ProfessorProfileActivity : AppCompatActivity() {
 
@@ -15,7 +16,7 @@ class ProfessorProfileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_professor_profile)
 
-        // Recuperamos el objeto 'Professor' pasado en el Intent
+        // Recuperamos el objeto 'com.example.loginycardview.data.Professor' pasado en el Intent
         val professor = intent.getParcelableExtra<Professor>("professor")
 
         // Referencias a los elementos de la vista
