@@ -1,4 +1,5 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -63,8 +64,19 @@
         android:id="@+id/contactButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Contactar Profesor"
+        android:layout_marginBottom="8dp"
         android:background="@drawable/button_background"
+        android:text="Contactar Profesor"
         android:textColor="@android:color/white"
-        android:layout_marginBottom="8dp"/>
+        app:icon="@android:drawable/ic_dialog_email" />
+
+    <Button
+        android:id="@+id/backButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/button_background"
+        android:text="Volver"
+        android:textColor="@android:color/white"
+        app:icon="@android:drawable/ic_menu_revert" />
 </LinearLayout>

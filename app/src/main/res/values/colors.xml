@@ -21,4 +21,11 @@
     <!-- Colores de fondo -->
     <color name="cardBackground">#EDE7F6</color> <!-- Fondo de tarjeta lila claro -->
     <color name="dangerColor">#D32F2F</color> <!-- Rojo para eliminar -->
+
+    <color name="purple_700">#3700B3</color>
+    <color name="purple_500">#6200EE</color>
+    <color name="gray">#9E9E9E</color>
+
+    <color name="colorAccent">#9B59B6</color>
+
 </resources>

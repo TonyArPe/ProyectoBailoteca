@@ -1,5 +1,14 @@
 <resources>
     <string name="app_name">LoginYCardView</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="navigation_drawer_open">Abrir menú</string>
+    <string name="navigation_drawer_close">Cerrar menú</string>
+    <string name="profile_image">Imagen de perfil</string>
+    <string name="home_button">Botón Home</string>
+    <string name="hello_blank_fragment">Hola, Fragmento!</string>
+    <string-array name="top_rated_options">
+        <item>Sí</item>
+        <item>No</item>
+    </string-array>
+
 </resources>

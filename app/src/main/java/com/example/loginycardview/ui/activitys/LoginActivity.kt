@@ -1,4 +1,4 @@
-package com.example.loginycardview.ui
+package com.example.loginycardview.ui.activitys
 
 import android.content.Context
 import android.content.Intent
@@ -26,11 +26,10 @@ class LoginActivity : AppCompatActivity() {
         val editTextUsername = findViewById<AutoCompleteTextView>(R.id.editTextUsername)
         val editTextPassword = findViewById<EditText>(R.id.editTextPassword)
 
-        // Verificar si el usuario ya está logueado
         val sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
         val isLoggedIn = sharedPref.getBoolean("isLoggedIn", false)
         if (isLoggedIn) {
-            startActivity(Intent(this, PrincipalActivity::class.java))
+            startActivity(Intent(this, MainActivity::class.java))
             finish()
         }
 
@@ -47,12 +46,15 @@ class LoginActivity : AppCompatActivity() {
                 if (task.isSuccessful) {
                     val user = auth.currentUser
                     if (user != null && user.isEmailVerified) {
-                        // Guardar el estado del usuario logueado en SharedPreferences
+                        // Guardar los datos del usuario en SharedPreferences
                         with(sharedPref.edit()) {
+                            putString("username", user.displayName)
+                            putString("email", user.email)
+                            putString("profileImageUri", user.photoUrl?.toString())  // Foto de perfil si está disponible
                             putBoolean("isLoggedIn", true)
                             apply()
                         }
-                        startActivity(Intent(this, PrincipalActivity::class.java))
+                        startActivity(Intent(this, MainActivity::class.java))
                         finish()
                     } else {
                         Toast.makeText(this, "Por favor, verifica tu correo", Toast.LENGTH_SHORT).show()

@@ -8,7 +8,13 @@
     android:background="#FFFFFF"
     android:gravity="center">
 
-    <!-- Campo Nombre de Usuario -->
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        app:srcCompat="@mipmap/ic_profile_foreground" />
+
     <EditText
         android:id="@+id/editTextUsernameRegister"
         android:layout_width="match_parent"
@@ -19,7 +25,6 @@
         android:background="@drawable/input_background"
         android:layout_marginBottom="12dp" />
 
-    <!-- Campo Email -->
     <EditText
         android:id="@+id/editTextEmail"
         android:layout_width="match_parent"
@@ -30,7 +35,6 @@
         android:background="@drawable/input_background"
         android:layout_marginBottom="12dp" />
 
-    <!-- Campo Contraseña -->
     <EditText
         android:id="@+id/editTextPasswordRegister"
         android:layout_width="match_parent"
@@ -39,28 +43,23 @@
         android:inputType="textPassword"
         android:padding="12dp"
         android:background="@drawable/input_background"
-        android:layout_marginBottom="16dp" />
+        android:layout_marginBottom="12dp" />
 
-    <!-- Botón de Guardar -->
     <Button
         android:id="@+id/buttonSave"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Registrar"
-        android:textSize="16sp"
         android:textColor="#FFFFFF"
         android:background="@drawable/btn_register_background"
-        android:padding="12dp"
         android:layout_marginBottom="16dp" />
 
-    <!-- Botón de Cancelar -->
     <Button
         android:id="@+id/buttonCancel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Cancelar"
-        android:textSize="16sp"
         android:textColor="#FFFFFF"
-        android:background="@drawable/btn_cancel_background"
-        android:padding="12dp" />
+        android:background="@drawable/btn_cancel_background" />
+
 </LinearLayout>

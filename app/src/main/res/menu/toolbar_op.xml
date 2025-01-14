@@ -1,0 +1,21 @@
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/fragmentHome"
+        android:icon="@android:drawable/ic_menu_revert"
+        android:title="Home"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/fragmentConf"
+        android:icon="@android:drawable/ic_dialog_info"
+        android:title="Conf"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/fragmentPpal"
+        android:icon="@android:drawable/ic_media_play"
+        android:title="Videos"
+        app:showAsAction="ifRoom" />
+</menu>

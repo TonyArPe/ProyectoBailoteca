@@ -1,4 +1,4 @@
-package com.example.loginycardview.ui
+package com.example.loginycardview.ui.activitys
 
 import com.example.loginycardview.data.Professor
 import android.content.Intent
@@ -26,6 +26,7 @@ class ProfessorProfileActivity : AppCompatActivity() {
         val emailTextView = findViewById<TextView>(R.id.emailTextView)
         val imageView = findViewById<ImageView>(R.id.professorImageView)
         val contactButton: Button = findViewById(R.id.contactButton)
+        val backButton:Button = findViewById(R.id.backButton)
 
         // Asignamos los datos del profesor a los elementos de la vista
         nameTextView.text = professor?.name
@@ -48,6 +49,11 @@ class ProfessorProfileActivity : AppCompatActivity() {
 
             // Verificamos si hay una aplicación para enviar correos
             startActivity(Intent.createChooser(intent, "Enviar correo"))
+        }
+
+        // Configurar el botón de retroceso
+        backButton.setOnClickListener {
+            finish() // Cierra la actividad y vuelve a la anterior
         }
     }
 }

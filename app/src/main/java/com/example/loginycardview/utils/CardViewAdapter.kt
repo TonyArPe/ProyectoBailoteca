@@ -17,7 +17,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.loginycardview.R
-import com.example.loginycardview.ui.ProfessorProfileActivity
+import com.example.loginycardview.ui.activitys.ProfessorProfileActivity
 
 class CardViewAdapter(private val professors: MutableList<Professor>) :
     RecyclerView.Adapter<CardViewAdapter.ProfessorViewHolder>() {
