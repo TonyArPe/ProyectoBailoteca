@@ -26,6 +26,9 @@
     <color name="purple_500">#6200EE</color>
     <color name="gray">#9E9E9E</color>
 
+    <color name="teal_200">#BB86FC</color>
+
+
     <color name="colorAccent">#9B59B6</color>
 
 </resources>

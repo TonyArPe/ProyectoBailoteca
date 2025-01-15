@@ -4,12 +4,29 @@
         android:id="@+id/nav_instagram"
         android:icon="@drawable/ic_instagram"
         android:title="Instagram" />
+
     <item
         android:id="@+id/nav_settings"
         android:icon="@drawable/ic_settings"
         android:title="Configuración" />
+
+    <item
+        android:id="@+id/nav_select_image"
+        android:icon="@android:drawable/ic_menu_report_image"
+        android:title="Seleccionar Imagen" />
+
+    <item
+        android:id="@+id/nav_anuncios"
+        android:icon="@drawable/ic_anuncios"
+        android:title="Anuncios" />
+
     <item
         android:id="@+id/nav_logout"
         android:icon="@drawable/ic_logout"
         android:title="Cerrar sesión" />
+
+    <item
+        android:id="@+id/nav_generic_list"
+        android:icon="@android:drawable/presence_video_online"
+        android:title="Lista de Videos" />
 </menu>

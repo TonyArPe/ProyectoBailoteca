@@ -23,6 +23,8 @@ import com.google.android.material.snackbar.Snackbar
 import android.content.pm.PackageManager
 import android.Manifest
 import androidx.core.view.GravityCompat
+import com.example.loginycardview.ui.fragments.EventFragment
+import com.example.loginycardview.ui.fragments.GenericListFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -92,10 +94,16 @@ class MainActivity : AppCompatActivity() {
                         openGallery()
                     }
                 }
+
+                R.id.nav_anuncios -> replaceFragment(EventFragment())
+
+                R.id.nav_generic_list -> replaceFragment(GenericListFragment())
                 else -> {
                     Snackbar.make(drawerLayout, "Función no implementada", Snackbar.LENGTH_SHORT).show()
                 }
             }
+
+
             drawerLayout.closeDrawer(GravityCompat.START)
             true
         }
