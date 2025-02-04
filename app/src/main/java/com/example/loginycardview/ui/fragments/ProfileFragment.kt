@@ -18,34 +18,48 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     private lateinit var userNameTextView: TextView
     private lateinit var userEmailTextView: TextView
     private lateinit var profileImageView: ImageView
+    private lateinit var txtNameHeader: TextView
+    private lateinit var txtEmailHeader: TextView
+    private lateinit var imageLogoHeader: ImageView
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Recuperar SharedPreferences
+        // Inicializar vistas
+        userNameTextView = view.findViewById(R.id.user_name)
+        userEmailTextView = view.findViewById(R.id.user_email)
+        profileImageView = view.findViewById(R.id.profile_image)
+        txtNameHeader = view.findViewById(R.id.txt_name)
+        txtEmailHeader = view.findViewById(R.id.txt_email)
+        imageLogoHeader = view.findViewById(R.id.image_logo)
+
+        // Recuperar SharedPreferences para el perfil
         val sharedPref = activity?.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
         val userName = sharedPref?.getString("username", "Invitado")
         val userEmail = sharedPref?.getString("email", "No registrado")
         val userProfileImage = sharedPref?.getString("profileImage", "")
 
-        // Enlazar vistas
-        userNameTextView = view.findViewById(R.id.user_name)
-        userEmailTextView = view.findViewById(R.id.user_email)
-        profileImageView = view.findViewById(R.id.profile_image)
-
-        // Configurar texto de usuario
+        // Configurar el perfil en el fragmento
         userNameTextView.text = userName
         userEmailTextView.text = userEmail
 
-        // Cargar la imagen de perfil con Glide
         Glide.with(this)
-            .load(userProfileImage) // Ruta de la imagen de perfil desde SharedPreferences
-            .placeholder(R.drawable.ic_placeholder) // Imagen mientras carga
-            .error(R.drawable.ic_error) // Imagen si falla
+            .load(userProfileImage)
+            .placeholder(R.drawable.ic_placeholder)
+            .error(R.drawable.ic_error)
             .into(profileImageView)
 
-        // Agregar botón de edición de perfil
-        view.findViewById<MaterialButton>(R.id.btn_edit_profile).setOnClickListener {
+        // Configurar el Header del Navigation Drawer
+        txtNameHeader.text = userName
+        txtEmailHeader.text = userEmail
+        Glide.with(this)
+            .load(userProfileImage)
+            .placeholder(R.mipmap.ic_launcher_foreground)
+            .error(R.drawable.ic_error)
+            .into(imageLogoHeader)
+
+        // Botón para editar perfil
+        view.findViewById<MaterialButton>(R.id.btn_edit_profile)?.setOnClickListener {
             openEditProfileDialog(userName, userEmail, userProfileImage)
         }
     }
@@ -67,7 +81,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             .setTitle("Editar Perfil")
             .setView(dialogView)
             .setPositiveButton("Guardar") { _, _ ->
-                // Guardar los nuevos valores
+                // Guardar los nuevos valores en SharedPreferences
                 val sharedPref = activity?.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
                 with(sharedPref?.edit()) {
                     this?.putString("username", nameEditText.text.toString())
@@ -75,6 +89,23 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                     this?.putString("profileImage", imageEditText.text.toString())
                     this?.apply()
                 }
+                // Actualizar el Header después de guardar los cambios
+                txtNameHeader.text = nameEditText.text.toString()
+                txtEmailHeader.text = emailEditText.text.toString()
+                Glide.with(requireContext())
+                    .load(imageEditText.text.toString())
+                    .placeholder(R.mipmap.ic_launcher_foreground)
+                    .error(R.drawable.ic_error)
+                    .into(imageLogoHeader)
+
+                // Actualizar el fragmento con los nuevos datos
+                userNameTextView.text = nameEditText.text.toString()
+                userEmailTextView.text = emailEditText.text.toString()
+                Glide.with(requireContext())
+                    .load(imageEditText.text.toString())
+                    .placeholder(R.drawable.ic_placeholder)
+                    .error(R.drawable.ic_error)
+                    .into(profileImageView)
             }
             .setNegativeButton("Cancelar", null)
             .show()

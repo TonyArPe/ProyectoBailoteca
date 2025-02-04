@@ -1,5 +1,7 @@
 package com.example.loginycardview.utils
 
+import android.content.Intent
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,7 +23,11 @@ class VideoAdapter(private val videoList: List<Video>) :
         holder.titleTextView.text = video.title
         holder.descriptionTextView.text = video.description
 
-        // Aquí puedes configurar el enlace del video para que se reproduzca, o agregar más funcionalidades
+        // Aquí puedes agregar la funcionalidad para abrir el video en un navegador o reproductor
+        holder.itemView.setOnClickListener {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(video.videoUrl))
+            holder.itemView.context.startActivity(intent)
+        }
     }
 
     override fun getItemCount(): Int = videoList.size
@@ -31,3 +37,5 @@ class VideoAdapter(private val videoList: List<Video>) :
         val descriptionTextView: TextView = itemView.findViewById(R.id.video_description)
     }
 }
+
+

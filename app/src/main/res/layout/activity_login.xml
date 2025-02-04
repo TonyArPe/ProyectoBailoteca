@@ -65,10 +65,21 @@
         android:id="@+id/buttonForgotPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="¿Olvidaste tu contraseña?"
-        android:textSize="14sp"
-        android:textColor="@color/black"
         android:background="@drawable/btn_forgot_password_background"
-        android:padding="12dp" />
+        android:padding="12dp"
+        android:text="¿Olvidaste tu contraseña?"
+        android:textColor="@color/black"
+        android:textSize="14sp" />
+
+    <Button
+        android:id="@+id/buttonGuestLogin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:padding="12dp"
+        android:text="Entrar como Invitado"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp" />
+
 
 </LinearLayout>

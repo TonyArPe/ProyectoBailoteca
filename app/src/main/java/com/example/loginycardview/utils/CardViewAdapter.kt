@@ -31,6 +31,7 @@ class CardViewAdapter(private val professors: MutableList<Professor>) :
         val expandButton: ImageButton = itemView.findViewById(R.id.buttonExpand)
         val buttonEdit: ImageButton = itemView.findViewById(R.id.buttonEdit)
         val buttonDelete: ImageButton = itemView.findViewById(R.id.buttonDelete)
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProfessorViewHolder {
@@ -68,18 +69,31 @@ class CardViewAdapter(private val professors: MutableList<Professor>) :
             holder.itemView.context.startActivity(Intent.createChooser(intent, "Enviar correo"))
         }
 
-        // Botón de Editar
-        holder.buttonEdit.setOnClickListener {
-            showEditDialog(holder.itemView.context, position)
+        // Botón de Editar (visible solo si no es invitado)
+        if (!isGuest(holder.itemView.context)) {
+            holder.buttonEdit.setOnClickListener {
+                showEditDialog(holder.itemView.context, position)
+            }
+        } else {
+            holder.buttonEdit.visibility = View.GONE
         }
 
-        // Botón de Eliminar
-        holder.buttonDelete.setOnClickListener {
-            showDeleteConfirmationDialog(holder.itemView.context, position)
+        // Botón de Eliminar (visible solo si no es invitado)
+        if (!isGuest(holder.itemView.context)) {
+            holder.buttonDelete.setOnClickListener {
+                showDeleteConfirmationDialog(holder.itemView.context, position)
+            }
+        } else {
+            holder.buttonDelete.visibility = View.GONE
         }
     }
 
     override fun getItemCount(): Int = professors.size
+
+    private fun isGuest(context: Context): Boolean {
+        return context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE).getBoolean("isGuest", false)
+    }
+
 
     private fun showEditDialog(context: Context, position: Int) {
         val professor = professors[position]
@@ -122,8 +136,3 @@ class CardViewAdapter(private val professors: MutableList<Professor>) :
         dialog.show()
     }
 }
-
-
-
-
-

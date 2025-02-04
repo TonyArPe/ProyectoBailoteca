@@ -2,46 +2,4 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/nav_graph"
-    app:startDestination="@id/fragmentHome">
-
-    <!-- Fragmento de Home -->
-    <fragment
-        android:id="@+id/fragmentHome"
-        android:name="com.example.loginycardview.ui.fragments.home.FragmentHome"
-        android:label="fragment_home"
-        tools:layout="@layout/fragment_home">
-        <!-- Acciones de navegación desde el FragmentHome -->
-        <action
-            android:id="@+id/action_home_to_conf"
-            app:destination="@id/fragmentConf" />
-        <action
-            android:id="@+id/action_home_to_ppal"
-            app:destination="@id/fragmentPpal" />
-    </fragment>
-
-    <!-- Fragmento de Configuración -->
-    <fragment
-        android:id="@+id/fragmentConf"
-        android:name="com.example.loginycardview.ui.fragments.conf.FragmentConf"
-        android:label="fragment_conf"
-        tools:layout="@layout/fragment_conf">
-        <!-- Acción de regreso a Home -->
-        <action
-            android:id="@+id/action_conf_to_home"
-            app:destination="@id/fragmentHome" />
-    </fragment>
-
-    <!-- Fragmento Principal (Ppal) -->
-    <fragment
-        android:id="@+id/fragmentPpal"
-        android:name="com.example.loginycardview.ui.fragments.ppal.FragmentPpal"
-        android:label="fragment_ppal"
-        tools:layout="@layout/fragment_ppal">
-        <!-- Acción de regreso a Home -->
-        <action
-            android:id="@+id/action_ppal_to_home"
-            app:destination="@id/fragmentHome" />
-    </fragment>
-
-</navigation>
+    android:id="@+id/nav_graph"/>

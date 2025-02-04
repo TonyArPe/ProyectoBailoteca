@@ -23,6 +23,7 @@ class LoginActivity : AppCompatActivity() {
         val buttonLogin = findViewById<Button>(R.id.buttonLogin)
         val buttonRegister = findViewById<Button>(R.id.buttonRegister)
         val buttonForgotPassword = findViewById<Button>(R.id.buttonForgotPassword)
+        val buttonGuestLogin = findViewById<Button>(R.id.buttonGuestLogin) // Nuevo botón para invitado
         val editTextUsername = findViewById<AutoCompleteTextView>(R.id.editTextUsername)
         val editTextPassword = findViewById<EditText>(R.id.editTextPassword)
 
@@ -46,7 +47,6 @@ class LoginActivity : AppCompatActivity() {
                 if (task.isSuccessful) {
                     val user = auth.currentUser
                     if (user != null && user.isEmailVerified) {
-                        // Guardar los datos del usuario en SharedPreferences
                         with(sharedPref.edit()) {
                             putString("username", user.displayName)
                             putString("email", user.email)
@@ -84,5 +84,17 @@ class LoginActivity : AppCompatActivity() {
                 }
             }
         }
+
+        // Modo Invitado
+        buttonGuestLogin.setOnClickListener {
+            with(sharedPref.edit()) {
+                putBoolean("isGuest", true)
+                putBoolean("isLoggedIn", false)  // Asegurarse de que no está logueado
+                apply()
+            }
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+        }
     }
 }
+

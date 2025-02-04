@@ -48,18 +48,6 @@
             app:layout_constraintTop_toBottomOf="@id/fragment_container"
             app:menu="@menu/bottom_navigation_menu" />
 
-        <!-- ImageView para mostrar la imagen seleccionada -->
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="16dp"
-            android:src="@android:drawable/ic_menu_camera"
-            app:layout_constraintTop_toBottomOf="@id/fragment_container"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- Navigation Drawer -->

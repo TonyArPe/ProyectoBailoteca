@@ -48,7 +48,7 @@
 
         <!-- Actividad de Configuración -->
         <activity
-            android:name=".ui.activitys.ConfiguracionActivity"
+            android:name=".ui.activities.ConfiguracionActivity"
             android:exported="false" />
 
         <!-- Actividad del Perfil del Profesor -->
