@@ -12,6 +12,7 @@ import com.example.loginycardview.R
 import com.google.firebase.auth.FirebaseAuth
 
 class LoginActivity : AppCompatActivity() {
+
     private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,13 +24,15 @@ class LoginActivity : AppCompatActivity() {
         val buttonLogin = findViewById<Button>(R.id.buttonLogin)
         val buttonRegister = findViewById<Button>(R.id.buttonRegister)
         val buttonForgotPassword = findViewById<Button>(R.id.buttonForgotPassword)
-        val buttonGuestLogin = findViewById<Button>(R.id.buttonGuestLogin) // Nuevo botón para invitado
+        val buttonGuestLogin = findViewById<Button>(R.id.buttonGuestLogin)
         val editTextUsername = findViewById<AutoCompleteTextView>(R.id.editTextUsername)
         val editTextPassword = findViewById<EditText>(R.id.editTextPassword)
 
+        // Inicializar SharedPreferences
         val sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        val isLoggedIn = sharedPref.getBoolean("isLoggedIn", false)
-        if (isLoggedIn) {
+
+        // Verificar si el usuario ya ha iniciado sesión
+        if (sharedPref.getBoolean("isLoggedIn", false)) {
             startActivity(Intent(this, MainActivity::class.java))
             finish()
         }
@@ -47,13 +50,16 @@ class LoginActivity : AppCompatActivity() {
                 if (task.isSuccessful) {
                     val user = auth.currentUser
                     if (user != null && user.isEmailVerified) {
+                        // Guardar estado de inicio de sesión
+                        val sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
                         with(sharedPref.edit()) {
-                            putString("username", user.displayName)
-                            putString("email", user.email)
-                            putString("profileImageUri", user.photoUrl?.toString())  // Foto de perfil si está disponible
                             putBoolean("isLoggedIn", true)
+                            putString("username", user.displayName ?: "Usuario")
+                            putString("email", user.email ?: "No registrado")
+                            putString("profileImageUri", user.photoUrl?.toString() ?: "")
                             apply()
                         }
+                        // Redirigir a MainActivity
                         startActivity(Intent(this, MainActivity::class.java))
                         finish()
                     } else {
@@ -89,7 +95,7 @@ class LoginActivity : AppCompatActivity() {
         buttonGuestLogin.setOnClickListener {
             with(sharedPref.edit()) {
                 putBoolean("isGuest", true)
-                putBoolean("isLoggedIn", false)  // Asegurarse de que no está logueado
+                putBoolean("isLoggedIn", false) // Asegurarse de que no está logueado
                 apply()
             }
             startActivity(Intent(this, MainActivity::class.java))
@@ -97,4 +103,3 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 }
-

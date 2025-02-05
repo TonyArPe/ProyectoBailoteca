@@ -2,11 +2,15 @@ package com.example.loginycardview.ui.activities
 
 import android.app.AlertDialog
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.example.loginycardview.R
@@ -18,6 +22,19 @@ class ConfiguracionActivity : AppCompatActivity() {
     private lateinit var userEmailTextView: TextView
     private lateinit var profileImageView: ImageView
     private lateinit var saveButton: MaterialButton
+    private var selectedImageUri: Uri? = null
+
+    // Registrar un callback para seleccionar una imagen de la galería
+    private val galleryLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        uri?.let {
+            selectedImageUri = it
+            Glide.with(this)
+                .load(it)
+                .placeholder(R.drawable.ic_placeholder)
+                .error(R.drawable.ic_error)
+                .into(profileImageView)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,21 +50,23 @@ class ConfiguracionActivity : AppCompatActivity() {
         val sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
         val userName = sharedPref.getString("username", "Invitado")
         val userEmail = sharedPref.getString("email", "No registrado")
-        val userProfileImage = sharedPref.getString("profileImage", "")
+        val userProfileImageUri = sharedPref.getString("profileImageUri", null)
 
         // Configurar los datos en la UI
         userNameTextView.text = userName
         userEmailTextView.text = userEmail
 
-        Glide.with(this)
-            .load(userProfileImage)
-            .placeholder(R.drawable.ic_placeholder)
-            .error(R.drawable.ic_error)
-            .into(profileImageView)
+        if (userProfileImageUri != null) {
+            Glide.with(this)
+                .load(Uri.parse(userProfileImageUri))
+                .placeholder(R.drawable.ic_placeholder)
+                .error(R.drawable.ic_error)
+                .into(profileImageView)
+        }
 
         // Acción para editar el perfil
         findViewById<MaterialButton>(R.id.btn_edit_profile)?.setOnClickListener {
-            openEditProfileDialog(userName, userEmail, userProfileImage)
+            openEditProfileDialog(userName, userEmail, userProfileImageUri)
         }
 
         // Acción para guardar cambios
@@ -56,17 +75,21 @@ class ConfiguracionActivity : AppCompatActivity() {
         }
     }
 
-    private fun openEditProfileDialog(userName: String?, userEmail: String?, userProfileImage: String?) {
+    private fun openEditProfileDialog(userName: String?, userEmail: String?, userProfileImageUri: String?) {
         // Crear un diálogo para editar el perfil
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_edit_profile, null)
         val nameEditText = dialogView.findViewById<EditText>(R.id.edit_name)
         val emailEditText = dialogView.findViewById<EditText>(R.id.edit_email)
-        val imageEditText = dialogView.findViewById<EditText>(R.id.edit_image)
+        val imageButton = dialogView.findViewById<MaterialButton>(R.id.btn_select_image)
 
         // Prellenar los campos con los datos actuales
         nameEditText.setText(userName)
         emailEditText.setText(userEmail)
-        imageEditText.setText(userProfileImage)
+
+        // Acción para seleccionar una imagen de la galería
+        imageButton.setOnClickListener {
+            galleryLauncher.launch("image/*")
+        }
 
         // Crear el diálogo
         AlertDialog.Builder(this)
@@ -78,25 +101,31 @@ class ConfiguracionActivity : AppCompatActivity() {
                 with(sharedPref.edit()) {
                     putString("username", nameEditText.text.toString())
                     putString("email", emailEditText.text.toString())
-                    putString("profileImage", imageEditText.text.toString())
+                    selectedImageUri?.let { uri ->
+                        putString("profileImageUri", uri.toString())
+                    }
                     apply()
                 }
                 // Actualizar la UI después de guardar los cambios
-                updateUIAfterProfileChanges(nameEditText.text.toString(), emailEditText.text.toString(), imageEditText.text.toString())
+                updateUIAfterProfileChanges(nameEditText.text.toString(), emailEditText.text.toString(), selectedImageUri)
+                // Notificar a MainActivity que los datos han cambiado
+                setResult(RESULT_OK)
             }
             .setNegativeButton("Cancelar", null)
             .show()
     }
 
-    private fun updateUIAfterProfileChanges(userName: String, userEmail: String, userProfileImage: String) {
+    private fun updateUIAfterProfileChanges(userName: String, userEmail: String, imageUri: Uri?) {
         // Actualizar la UI de la actividad
         userNameTextView.text = userName
         userEmailTextView.text = userEmail
-        Glide.with(this)
-            .load(userProfileImage)
-            .placeholder(R.drawable.ic_placeholder)
-            .error(R.drawable.ic_error)
-            .into(profileImageView)
+        imageUri?.let {
+            Glide.with(this)
+                .load(it)
+                .placeholder(R.drawable.ic_placeholder)
+                .error(R.drawable.ic_error)
+                .into(profileImageView)
+        }
     }
 
     private fun saveUserProfileChanges() {
@@ -105,8 +134,12 @@ class ConfiguracionActivity : AppCompatActivity() {
         with(sharedPref.edit()) {
             putString("username", userNameTextView.text.toString())
             putString("email", userEmailTextView.text.toString())
-            putString("profileImage", "")
+            selectedImageUri?.let {
+                putString("profileImageUri", it.toString())
+            }
             apply()
         }
+        // Notificar a MainActivity que los datos han cambiado
+        setResult(RESULT_OK)
     }
 }

@@ -49,7 +49,7 @@ class PrincipalFragment : Fragment(R.layout.fragment_principal) {
             Glide.with(requireContext())
                 .load(profileImageUri)
                 .placeholder(R.mipmap.ic_launcher_foreground)  // Imagen por defecto mientras se carga
-                .into(imageView)
+
         } else {
             // Si no hay URI, mostrar la imagen por defecto
             imageView?.setImageResource(R.mipmap.ic_launcher_foreground)

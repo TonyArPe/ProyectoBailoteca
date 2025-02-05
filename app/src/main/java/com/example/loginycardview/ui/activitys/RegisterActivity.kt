@@ -39,10 +39,12 @@ class RegisterActivity : AppCompatActivity() {
                 if (task.isSuccessful) {
                     // Guardar los datos en SharedPreferences
                     val sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-                    val editor = sharedPref.edit()
-                    editor.putString("username", username)
-                    editor.putString("email", email)
-                    editor.apply()  // Aplicar los cambios
+                    with(sharedPref.edit()) {
+                        putString("username", username)
+                        putString("email", email)
+                        putBoolean("isLoggedIn", false) // Aún no está logueado hasta que verifique el correo
+                        apply()
+                    }
 
                     auth.currentUser?.sendEmailVerification()?.addOnCompleteListener { verificationTask ->
                         if (verificationTask.isSuccessful) {
@@ -65,4 +67,3 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 }
-

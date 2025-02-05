@@ -4,14 +4,14 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
-import android.view.View
-import com.google.android.material.snackbar.Snackbar
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import com.bumptech.glide.Glide
 import com.example.loginycardview.R
 import com.example.loginycardview.ui.activities.ConfiguracionActivity
 import com.example.loginycardview.ui.fragments.EventFragment
@@ -19,6 +19,7 @@ import com.example.loginycardview.ui.fragments.PrincipalFragment
 import com.example.loginycardview.ui.fragments.VideoFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
+import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,6 +28,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var bottomNavigation: BottomNavigationView
     private lateinit var toolbar: Toolbar
     private lateinit var sharedPref: SharedPreferences
+
+    // Registrar un callback para recibir resultados de ConfiguracionActivity
+    private val configuracionResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            // Actualizar el header del Navigation Drawer
+            updateNavigationHeader()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,12 +83,22 @@ class MainActivity : AppCompatActivity() {
         val imageLogoHeader: ImageView = headerView.findViewById(R.id.image_logo)
 
         // Obtener los datos guardados en SharedPreferences
-        val userName = sharedPref.getString("userName", "Usuario")
-        val userEmail = sharedPref.getString("userEmail", "ejemplo@gmail.com")
+        val userName = sharedPref.getString("username", "Usuario")
+        val userEmail = sharedPref.getString("email", "ejemplo@gmail.com")
+        val userProfileImageUri = sharedPref.getString("profileImageUri", null)
 
         // Asignar los valores a los TextView
         txtNameHeader.text = userName
         txtEmailHeader.text = userEmail
+
+        // Cargar la imagen del perfil
+        if (userProfileImageUri != null) {
+            Glide.with(this)
+                .load(Uri.parse(userProfileImageUri))
+                .placeholder(R.drawable.ic_placeholder)
+                .error(R.drawable.ic_error)
+                .into(imageLogoHeader)
+        }
 
         navView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
@@ -102,6 +121,30 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun updateNavigationHeader() {
+        val headerView = navView.getHeaderView(0)
+        val txtNameHeader: TextView = headerView.findViewById(R.id.txt_name)
+        val txtEmailHeader: TextView = headerView.findViewById(R.id.txt_email)
+        val imageLogoHeader: ImageView = headerView.findViewById(R.id.image_logo)
+
+        // Obtener los datos actualizados de SharedPreferences
+        val userName = sharedPref.getString("username", "Usuario")
+        val userEmail = sharedPref.getString("email", "ejemplo@gmail.com")
+        val userProfileImageUri = sharedPref.getString("profileImageUri", null)
+
+        // Actualizar los TextView del header
+        txtNameHeader.text = userName
+        txtEmailHeader.text = userEmail
+
+        // Cargar la imagen del perfil
+        if (userProfileImageUri != null) {
+            Glide.with(this)
+                .load(Uri.parse(userProfileImageUri))
+                .placeholder(R.drawable.ic_placeholder)
+                .error(R.drawable.ic_error)
+                .into(imageLogoHeader)
+        }
+    }
 
     private fun setupBottomNavigation() {
         bottomNavigation.setOnItemSelectedListener { item ->
@@ -126,7 +169,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun openSettings() {
         val intent = Intent(this, ConfiguracionActivity::class.java)
-        startActivity(intent)
+        configuracionResultLauncher.launch(intent)
     }
 
     private fun logoutUser() {
