@@ -7,16 +7,14 @@
     android:background="@color/purple_500"
     android:padding="16dp">
 
-    <ImageView
-        android:id="@+id/image_logo"
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/image_perfil"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:layout_marginBottom="8dp"
-        android:contentDescription="Logo"
-        android:scaleType="centerCrop"
-        android:src="@mipmap/ic_launcher_foreground"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:src="@drawable/ic_placeholder"
+        android:contentDescription="@string/profile_image_description"/>
+
+
 
     <TextView
         android:id="@+id/txt_name"
@@ -27,8 +25,8 @@
         android:textColor="#FFFFFF"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@+id/image_logo"
-        app:layout_constraintTop_toTopOf="@id/image_logo" />
+        app:layout_constraintStart_toEndOf="@+id/image_perfil"
+        app:layout_constraintTop_toTopOf="@id/image_perfil" />
 
     <TextView
         android:id="@+id/txt_email"

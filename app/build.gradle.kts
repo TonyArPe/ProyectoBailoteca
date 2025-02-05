@@ -59,6 +59,7 @@ dependencies {
     implementation ("androidx.cardview:cardview:1.0.0")
     implementation ("androidx.constraintlayout:constraintlayout:2.0.4")
     implementation ("androidx.fragment:fragment-ktx:1.4.0")
+    implementation ("de.hdodenhof:circleimageview:3.1.0")
 
     // Dependencias para Firebase Authentication, si se usan en la app
     implementation("com.google.firebase:firebase-auth:21.0.0")

@@ -43,7 +43,7 @@ class PrincipalFragment : Fragment(R.layout.fragment_principal) {
         txtEmail?.text = email
 
         // Actualizar la imagen del perfil en el header
-        val imageView = view.findViewById<ImageView>(R.id.image_logo)
+        val imageView = view.findViewById<ImageView>(R.id.image_perfil)
         if (profileImageUri != null) {
             // Si la URI de la imagen está presente, cargarla con Glide
             Glide.with(requireContext())

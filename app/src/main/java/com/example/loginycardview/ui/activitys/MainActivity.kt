@@ -11,15 +11,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import com.bumptech.glide.Glide
 import com.example.loginycardview.R
-import com.example.loginycardview.ui.activities.ConfiguracionActivity
 import com.example.loginycardview.ui.fragments.EventFragment
 import com.example.loginycardview.ui.fragments.PrincipalFragment
+import com.example.loginycardview.ui.fragments.SettingsFragment
 import com.example.loginycardview.ui.fragments.VideoFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
+typealias Fragment = androidx.fragment.app.Fragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -29,10 +29,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var toolbar: Toolbar
     private lateinit var sharedPref: SharedPreferences
 
-    // Registrar un callback para recibir resultados de ConfiguracionActivity
     private val configuracionResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
-            // Actualizar el header del Navigation Drawer
             updateNavigationHeader()
         }
     }
@@ -45,8 +43,8 @@ class MainActivity : AppCompatActivity() {
         initViews()
         setupToolbar()
         setupNavigationDrawer()
-        setupBottomNavigation()
 
+        // El MainActivity debe abrir el PrincipalFragment por defecto
         if (savedInstanceState == null) {
             replaceFragment(PrincipalFragment())
         }
@@ -61,43 +59,29 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupToolbar() {
         setSupportActionBar(toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_menu)
-        supportActionBar?.title = "La Bailoteca"
-
-        toolbar.setNavigationOnClickListener {
-            drawerLayout.openDrawer(GravityCompat.START)
+        supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            setHomeAsUpIndicator(R.drawable.ic_menu)
+            title = "La Bailoteca"
         }
+        toolbar.setNavigationOnClickListener { drawerLayout.openDrawer(GravityCompat.START) }
     }
 
     private fun setupNavigationDrawer() {
-        val sharedPref = getSharedPreferences("UserPrefs", MODE_PRIVATE)
         val isGuest = sharedPref.getBoolean("isGuest", false)
-
-        // Obtener la vista del header dentro del NavigationView
         val headerView = navView.getHeaderView(0)
-
-        // Ahora buscamos los elementos dentro del header
         val txtNameHeader: TextView = headerView.findViewById(R.id.txt_name)
         val txtEmailHeader: TextView = headerView.findViewById(R.id.txt_email)
-        val imageLogoHeader: ImageView = headerView.findViewById(R.id.image_logo)
+        val imageLogoHeader: ImageView = headerView.findViewById(R.id.image_perfil)
 
-        // Obtener los datos guardados en SharedPreferences
-        val userName = sharedPref.getString("username", "Usuario")
-        val userEmail = sharedPref.getString("email", "ejemplo@gmail.com")
-        val userProfileImageUri = sharedPref.getString("profileImageUri", null)
+        val username = sharedPref.getString("username", "Usuario")
+        val email = sharedPref.getString("email", "ejemplo@gmail.com")
+        val profileImageUri = sharedPref.getString("profileImageUri", null)
 
-        // Asignar los valores a los TextView
-        txtNameHeader.text = userName
-        txtEmailHeader.text = userEmail
-
-        // Cargar la imagen del perfil
-        if (userProfileImageUri != null) {
-            Glide.with(this)
-                .load(Uri.parse(userProfileImageUri))
-                .placeholder(R.drawable.ic_placeholder)
-                .error(R.drawable.ic_error)
-                .into(imageLogoHeader)
+        txtNameHeader.text = username
+        txtEmailHeader.text = email
+        if (profileImageUri != null) {
+            imageLogoHeader.setImageURI(Uri.parse(profileImageUri))
         }
 
         navView.setNavigationItemSelectedListener { menuItem ->
@@ -107,13 +91,17 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_logout -> logoutUser()
                 R.id.nav_anuncios -> replaceFragment(EventFragment())
                 R.id.nav_generic_list -> replaceFragment(VideoFragment())
+                R.id.nav_home -> {
+                    replaceFragment(PrincipalFragment())  // Cambia a PrincipalFragment
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    true
+                } // Asegura que va a PrincipalFragment
                 else -> showSnackbar("Función no implementada")
             }
             drawerLayout.closeDrawer(GravityCompat.START)
             true
         }
 
-        // Ocultar elementos si es invitado
         if (isGuest) {
             navView.menu.findItem(R.id.nav_settings).isVisible = false
             navView.menu.findItem(R.id.nav_anuncios).isVisible = false
@@ -125,69 +113,39 @@ class MainActivity : AppCompatActivity() {
         val headerView = navView.getHeaderView(0)
         val txtNameHeader: TextView = headerView.findViewById(R.id.txt_name)
         val txtEmailHeader: TextView = headerView.findViewById(R.id.txt_email)
-        val imageLogoHeader: ImageView = headerView.findViewById(R.id.image_logo)
+        val imageLogoHeader: ImageView = headerView.findViewById(R.id.image_perfil)
 
-        // Obtener los datos actualizados de SharedPreferences
-        val userName = sharedPref.getString("username", "Usuario")
-        val userEmail = sharedPref.getString("email", "ejemplo@gmail.com")
-        val userProfileImageUri = sharedPref.getString("profileImageUri", null)
-
-        // Actualizar los TextView del header
-        txtNameHeader.text = userName
-        txtEmailHeader.text = userEmail
-
-        // Cargar la imagen del perfil
-        if (userProfileImageUri != null) {
-            Glide.with(this)
-                .load(Uri.parse(userProfileImageUri))
-                .placeholder(R.drawable.ic_placeholder)
-                .error(R.drawable.ic_error)
-                .into(imageLogoHeader)
-        }
-    }
-
-    private fun setupBottomNavigation() {
-        bottomNavigation.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.nav_home -> {
-                    replaceFragment(PrincipalFragment())
-                    true
-                }
-                R.id.nav_profile -> {
-                    openSettings()
-                    true
-                }
-                else -> false
-            }
+        txtNameHeader.text = sharedPref.getString("username", "Usuario")
+        txtEmailHeader.text = sharedPref.getString("email", "ejemplo@gmail.com")
+        sharedPref.getString("profileImageUri", null)?.let {
+            imageLogoHeader.setImageURI(Uri.parse(it))
         }
     }
 
     private fun openInstagram() {
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.instagram.com/labailoteca/"))
-        startActivity(intent)
+        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.instagram.com/labailoteca/")))
     }
 
     private fun openSettings() {
-        val intent = Intent(this, ConfiguracionActivity::class.java)
-        configuracionResultLauncher.launch(intent)
+        replaceFragment(SettingsFragment()) // Reemplaza directamente el fragmento de configuración
     }
 
     private fun logoutUser() {
         sharedPref.edit().clear().apply()
-        val intent = Intent(this, LoginActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        startActivity(intent)
+        startActivity(Intent(this, LoginActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        })
         finish()
     }
 
-    private fun replaceFragment(fragment: androidx.fragment.app.Fragment) {
+    private fun replaceFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .commit()
     }
 
     private fun showSnackbar(message: String) {
-        // Usamos el DrawerLayout como la vista principal para mostrar el Snackbar
         Snackbar.make(drawerLayout, message, Snackbar.LENGTH_SHORT).show()
     }
 }
+

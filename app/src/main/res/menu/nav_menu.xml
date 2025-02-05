@@ -24,4 +24,9 @@
         android:id="@+id/nav_generic_list"
         android:icon="@android:drawable/presence_video_online"
         android:title="Lista de Videos" />
+
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/ic_home"
+        android:title="Home" />
 </menu>

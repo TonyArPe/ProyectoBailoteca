@@ -31,7 +31,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         profileImageView = view.findViewById(R.id.profile_image)
         txtNameHeader = view.findViewById(R.id.txt_name)
         txtEmailHeader = view.findViewById(R.id.txt_email)
-        imageLogoHeader = view.findViewById(R.id.image_logo)
+        imageLogoHeader = view.findViewById(R.id.image_perfil)
 
         // Recuperar SharedPreferences para el perfil
         val sharedPref = activity?.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)

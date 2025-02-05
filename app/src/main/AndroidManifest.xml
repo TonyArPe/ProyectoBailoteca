@@ -46,7 +46,7 @@
             android:name=".ui.activitys.MainActivity"
             android:exported="true" />
 
-        <!-- Actividad de Configuración -->
+        <!-- Actividad Principal -->
         <activity
             android:name=".ui.activities.ConfiguracionActivity"
             android:exported="false" />

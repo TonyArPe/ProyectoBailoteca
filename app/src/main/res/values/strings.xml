@@ -6,6 +6,13 @@
     <string name="profile_image">Imagen de perfil</string>
     <string name="home_button">Botón Home</string>
     <string name="hello_blank_fragment">Hola, Fragmento!</string>
+    <!-- Cadenas para el fragmento de configuración -->
+    <string name="profile_image_description">Imagen de perfil</string>
+    <string name="username_hint">Nombre de usuario</string>
+    <string name="save_changes">Guardar cambios</string>
+    <string name="error_imagen_pick">Error al seleccionar la imagen</string>
+    <string name="perfil_actualizado">Perfil actualizado</string>
+    <string name="no_cambios">No se realizaron cambios</string>
     <string-array name="top_rated_options">
         <item>Sí</item>
         <item>No</item>
