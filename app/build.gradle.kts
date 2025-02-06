@@ -57,6 +57,7 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation ("androidx.cardview:cardview:1.0.0")
+    implementation ("androidx.recyclerview:recyclerview:1.3.2")
     implementation ("androidx.constraintlayout:constraintlayout:2.0.4")
     implementation ("androidx.fragment:fragment-ktx:1.4.0")
     implementation ("de.hdodenhof:circleimageview:3.1.0")
