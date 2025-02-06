@@ -6,6 +6,7 @@
     android:background="@color/white"
     android:elevation="4dp">
 
+    <!-- Botón para añadir profesor -->
     <TextView
         android:id="@+id/add_professor_option"
         android:layout_width="match_parent"
@@ -20,18 +21,19 @@
         android:textColor="@color/purple_500"
         android:textSize="18sp" />
 
-    <!-- Ejemplo de espacio para opciones futuras -->
+    <!-- Botón para horarios, con el mismo estilo visual que el de añadir profesor -->
     <TextView
-        android:id="@+id/option_placeholder"
+        android:id="@+id/schedule_class_option"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Opción futura"
-        android:textSize="18sp"
-        android:textColor="@color/gray"
-        android:padding="12dp"
-        android:gravity="center_vertical"
-        android:drawableLeft="@drawable/ic_placeholder"
-        android:drawablePadding="8dp"
+        android:layout_marginBottom="8dp"
         android:background="?attr/selectableItemBackground"
-        android:visibility="gone" />
+        android:drawableLeft="@android:drawable/ic_menu_view"
+        android:drawablePadding="8dp"
+        android:gravity="center_vertical"
+        android:padding="12dp"
+        android:text="Horarios"
+        android:textColor="@color/purple_500"
+        android:textSize="18sp" />
+
 </LinearLayout>

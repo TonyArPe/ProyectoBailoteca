@@ -60,6 +60,7 @@ dependencies {
     implementation ("androidx.constraintlayout:constraintlayout:2.0.4")
     implementation ("androidx.fragment:fragment-ktx:1.4.0")
     implementation ("de.hdodenhof:circleimageview:3.1.0")
+    implementation ("com.applandeo:material-calendar-view:1.9.2")
 
     // Dependencias para Firebase Authentication, si se usan en la app
     implementation("com.google.firebase:firebase-auth:21.0.0")
@@ -68,3 +69,7 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment-ktx:2.5.0")
     implementation("androidx.navigation:navigation-ui-ktx:2.5.0")
 }
+
+
+
+

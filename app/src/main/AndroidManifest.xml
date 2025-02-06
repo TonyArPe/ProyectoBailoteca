@@ -46,11 +46,6 @@
             android:name=".ui.activitys.MainActivity"
             android:exported="true" />
 
-        <!-- Actividad Principal -->
-        <activity
-            android:name=".ui.activities.ConfiguracionActivity"
-            android:exported="false" />
-
         <!-- Actividad del Perfil del Profesor -->
         <activity
             android:name=".ui.activitys.ProfessorProfileActivity"

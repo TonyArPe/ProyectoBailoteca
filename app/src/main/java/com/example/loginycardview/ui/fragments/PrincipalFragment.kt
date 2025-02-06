@@ -1,10 +1,13 @@
 package com.example.loginycardview.ui.fragments
 
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -14,6 +17,7 @@ import com.example.loginycardview.data.Professor
 import com.example.loginycardview.utils.CardViewAdapter
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import java.util.Calendar
 
 class PrincipalFragment : Fragment(R.layout.fragment_principal) {
 
@@ -31,6 +35,7 @@ class PrincipalFragment : Fragment(R.layout.fragment_principal) {
         val username = sharedPref?.getString("username", "Usuario")  // Valor por defecto si no se ha configurado
         val email = sharedPref?.getString("email", "email@dominio.com")  // Valor por defecto si no se ha configurado
         val profileImageUri = sharedPref?.getString("profileImageUri", null)  // URL de la imagen de perfil, por defecto null
+        val isLoggedIn = sharedPref?.getBoolean("isLoggedIn", false) ?: false  // Verificar si el usuario está logueado
 
         // Actualizar el texto de bienvenida
         val textViewUser = view.findViewById<TextView>(R.id.textViewUser)
@@ -49,7 +54,6 @@ class PrincipalFragment : Fragment(R.layout.fragment_principal) {
             Glide.with(requireContext())
                 .load(profileImageUri)
                 .placeholder(R.mipmap.ic_launcher_foreground)  // Imagen por defecto mientras se carga
-
         } else {
             // Si no hay URI, mostrar la imagen por defecto
             imageView?.setImageResource(R.mipmap.ic_launcher_foreground)
@@ -131,18 +135,29 @@ class PrincipalFragment : Fragment(R.layout.fragment_principal) {
         adapter = CardViewAdapter(professorList)
         recyclerView.adapter = adapter
 
-        // Botón flotante para agregar profesores
+        // Botón flotante para mostrar el menú
         val fab = view.findViewById<FloatingActionButton>(R.id.fab_add)
-        fab.setOnClickListener { showBottomNavigationDrawer() }
+        if (isLoggedIn) {
+            fab.setOnClickListener { showBottomNavigationDrawer() }
+        } else {
+            fab.visibility = View.GONE  // Ocultar el botón flotante si el usuario está en modo invitado
+        }
     }
 
     private fun showBottomNavigationDrawer() {
         val bottomSheetDialog = BottomSheetDialog(requireContext())
         val bottomSheetView = layoutInflater.inflate(R.layout.layout_bottom_navigation, null)
 
+        // Sección Añadir Profesor
         bottomSheetView.findViewById<View>(R.id.add_professor_option).setOnClickListener {
             bottomSheetDialog.dismiss()
             showAddProfessorDialog()
+        }
+
+        // Sección Horarios
+        bottomSheetView.findViewById<View>(R.id.schedule_class_option).setOnClickListener {
+            bottomSheetDialog.dismiss()
+            showCalendarDialog()
         }
 
         bottomSheetDialog.setContentView(bottomSheetView)
@@ -155,5 +170,54 @@ class PrincipalFragment : Fragment(R.layout.fragment_principal) {
             adapter.notifyItemInserted(professorList.size - 1)
         }
         addDialog.show(parentFragmentManager, "AddProfessorDialog")
+    }
+
+    private fun showCalendarDialog() {
+        val calendar = Calendar.getInstance()
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH)
+        val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
+
+        // Crear un DatePickerDialog
+        val datePickerDialog = DatePickerDialog(
+            requireContext(),
+            { _, selectedYear, selectedMonth, selectedDayOfMonth ->
+                // Después de seleccionar la fecha, mostrar el TimePicker
+                showTimePickerDialog(selectedYear, selectedMonth, selectedDayOfMonth)
+            },
+            year, month, dayOfMonth
+        )
+
+        // Mostrar el DatePickerDialog
+        datePickerDialog.show()
+    }
+
+    private fun showTimePickerDialog(year: Int, month: Int, dayOfMonth: Int) {
+        val calendar = Calendar.getInstance()
+        val hour = calendar.get(Calendar.HOUR_OF_DAY)
+        val minute = calendar.get(Calendar.MINUTE)
+
+        // Crear un TimePickerDialog
+        val timePickerDialog = TimePickerDialog(
+            requireContext(),
+            { _, selectedHour, selectedMinute ->
+                // Después de seleccionar la hora, mostrar el mensaje de confirmación
+                val selectedDateTime = "$dayOfMonth/${month + 1}/$year a las $selectedHour:$selectedMinute"
+                Toast.makeText(requireContext(), "Clase reservada para: $selectedDateTime", Toast.LENGTH_LONG).show()
+
+                // Aquí puedes agregar la lógica para guardar la reserva (a través de un backend, SharedPreferences, etc.)
+            },
+            hour, minute, true
+        )
+
+        // Mostrar el TimePickerDialog
+        timePickerDialog.show()
+    }
+
+    private fun saveReservation(dateTime: String) {
+        val sharedPref = activity?.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val editor = sharedPref?.edit()
+        editor?.putString("reservedClass", dateTime)
+        editor?.apply()
     }
 }
