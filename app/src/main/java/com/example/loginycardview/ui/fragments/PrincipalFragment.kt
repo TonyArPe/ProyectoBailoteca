@@ -3,6 +3,7 @@ package com.example.loginycardview.ui.fragments
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
@@ -31,11 +32,10 @@ class PrincipalFragment : Fragment(R.layout.fragment_principal) {
         requireActivity().title = "La Bailoteca"
 
         // Obtener los datos del usuario desde SharedPreferences
-        val sharedPref = activity?.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val sharedPref = activity?.getSharedPreferences("userSettings", Context.MODE_PRIVATE)
         val username = sharedPref?.getString("username", "Usuario")  // Valor por defecto si no se ha configurado
         val email = sharedPref?.getString("email", "email@dominio.com")  // Valor por defecto si no se ha configurado
-        val profileImageUri = sharedPref?.getString("profileImageUri", null)  // URL de la imagen de perfil, por defecto null
-        val isLoggedIn = sharedPref?.getBoolean("isLoggedIn", false) ?: false  // Verificar si el usuario está logueado
+        val profileImageUri = sharedPref?.getString("uri", null)  // URL de la imagen de perfil, por defecto null
 
         // Actualizar el texto de bienvenida
         val textViewUser = view.findViewById<TextView>(R.id.textViewUser)
@@ -52,8 +52,9 @@ class PrincipalFragment : Fragment(R.layout.fragment_principal) {
         if (profileImageUri != null) {
             // Si la URI de la imagen está presente, cargarla con Glide
             Glide.with(requireContext())
-                .load(profileImageUri)
+                .load(Uri.parse(profileImageUri))
                 .placeholder(R.mipmap.ic_launcher_foreground)  // Imagen por defecto mientras se carga
+                //.into(imageView)
         } else {
             // Si no hay URI, mostrar la imagen por defecto
             imageView?.setImageResource(R.mipmap.ic_launcher_foreground)
@@ -137,11 +138,7 @@ class PrincipalFragment : Fragment(R.layout.fragment_principal) {
 
         // Botón flotante para mostrar el menú
         val fab = view.findViewById<FloatingActionButton>(R.id.fab_add)
-        if (isLoggedIn) {
-            fab.setOnClickListener { showBottomNavigationDrawer() }
-        } else {
-            fab.visibility = View.GONE  // Ocultar el botón flotante si el usuario está en modo invitado
-        }
+        fab.setOnClickListener { showBottomNavigationDrawer() }
     }
 
     private fun showBottomNavigationDrawer() {
@@ -212,12 +209,5 @@ class PrincipalFragment : Fragment(R.layout.fragment_principal) {
 
         // Mostrar el TimePickerDialog
         timePickerDialog.show()
-    }
-
-    private fun saveReservation(dateTime: String) {
-        val sharedPref = activity?.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        val editor = sharedPref?.edit()
-        editor?.putString("reservedClass", dateTime)
-        editor?.apply()
     }
 }

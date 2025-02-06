@@ -131,11 +131,28 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun logoutUser() {
+        // Limpiar SharedPreferences
         sharedPref.edit().clear().apply()
+
+        // Limpiar caché (opcional)
+        clearCache()
+
+        // Notificar al servidor (opcional)
+        notifyServerLogout()
+
+        // Redirigir al usuario a la pantalla de inicio de sesión
         startActivity(Intent(this, LoginActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         })
         finish()
+    }
+
+    private fun clearCache() {
+        // Código para limpiar la caché de la aplicación
+    }
+
+    private fun notifyServerLogout() {
+        // Código para notificar al servidor que el usuario ha cerrado sesión
     }
 
     private fun replaceFragment(fragment: Fragment) {
