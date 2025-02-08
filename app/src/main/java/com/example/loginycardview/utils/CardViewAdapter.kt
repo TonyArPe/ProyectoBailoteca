@@ -1,9 +1,11 @@
 package com.example.loginycardview.utils
 
+import android.animation.ObjectAnimator
 import com.example.loginycardview.data.Professor
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +16,7 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.loginycardview.R
@@ -28,10 +31,8 @@ class CardViewAdapter(private val professors: MutableList<Professor>) :
         val specialty: TextView = itemView.findViewById(R.id.professorSpecialty)
         val rating: RatingBar = itemView.findViewById(R.id.professorRating)
         val contactButton: Button = itemView.findViewById(R.id.buttonContact)
-        val expandButton: ImageButton = itemView.findViewById(R.id.buttonExpand)
         val buttonEdit: ImageButton = itemView.findViewById(R.id.buttonEdit)
         val buttonDelete: ImageButton = itemView.findViewById(R.id.buttonDelete)
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProfessorViewHolder {
@@ -43,20 +44,38 @@ class CardViewAdapter(private val professors: MutableList<Professor>) :
     override fun onBindViewHolder(holder: ProfessorViewHolder, position: Int) {
         val professor = professors[position]
 
-        holder.name.text = professor.name
+        holder.name.text = professor.username
         holder.specialty.text = "Especialidad: ${professor.specialty}"
-        holder.rating.rating = if (professor.isTopRated) 5.0f else 3.0f
+        holder.rating.rating = professor.rating
 
+        // En el método onBindViewHolder, asegurémonos de que Glide reciba el recurso de imagen correctamente
         Glide.with(holder.itemView.context)
             .load(professor.imageResId)
             .placeholder(R.drawable.professor_placeholder)
+            .error(R.drawable.professor_placeholder)
+            .override(500, 500) // Redimensionar la imagen a un tamaño fijo (500x500 píxeles, por ejemplo)
             .into(holder.image)
 
-        // Abrir la Activity de detalles al hacer clic en expandir
-        holder.expandButton.setOnClickListener {
+
+
+        // Hacer clic sobre la imagen para mostrar el zoom
+        holder.image.setOnClickListener {
+            showImageZoomDialog(holder.itemView.context, professor.imageResId)
+            Log.d("CardViewAdapter", "Imagen de profesor: ${professor.imageResId}")
+
+        }
+
+        // Hacer el ítem completo clickeable para abrir la actividad de detalle
+        holder.itemView.setOnClickListener {
             val intent = Intent(holder.itemView.context, ProfessorProfileActivity::class.java)
             intent.putExtra("professor", professor)
             holder.itemView.context.startActivity(intent)
+        }
+
+        // Habilitar el RatingBar para que el usuario pueda votar
+        holder.rating.setOnRatingBarChangeListener { _, rating, _ ->
+            professor.rating = rating
+            Toast.makeText(holder.itemView.context, "Has votado con $rating estrellas", Toast.LENGTH_SHORT).show()
         }
 
         // Botón de contacto
@@ -65,7 +84,7 @@ class CardViewAdapter(private val professors: MutableList<Professor>) :
             intent.type = "message/rfc822"
             intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(professor.email))
             intent.putExtra(Intent.EXTRA_SUBJECT, "Consulta sobre clases")
-            intent.putExtra(Intent.EXTRA_TEXT, "Hola ${professor.name}, estoy interesado en tus clases de ${professor.specialty}.")
+            intent.putExtra(Intent.EXTRA_TEXT, "Hola ${professor.username}, estoy interesado en tus clases de ${professor.specialty}.")
             holder.itemView.context.startActivity(Intent.createChooser(intent, "Enviar correo"))
         }
 
@@ -94,6 +113,31 @@ class CardViewAdapter(private val professors: MutableList<Professor>) :
         return context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE).getBoolean("isGuest", false)
     }
 
+    private fun showImageZoomDialog(context: Context, imageResId: Int) {
+        val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_image_zoom, null)
+        val imageView: ImageView = dialogView.findViewById(R.id.zoomedImage)
+
+        val fadeIn = ObjectAnimator.ofFloat(imageView, "alpha", 0f, 1f)
+        fadeIn.duration = 500
+        fadeIn.start()
+
+        // Cargar la imagen en el ImageView
+        Glide.with(context)
+            .load(imageResId) // Usar el ID del recurso para cargar la imagen
+            .into(imageView)
+
+        val dialog = AlertDialog.Builder(context)
+            .setView(dialogView)
+            .create()
+
+        // Mostrar el diálogo
+        dialog.show()
+
+        // Hacer que el diálogo se cierre cuando se toque la imagen
+        imageView.setOnClickListener {
+            dialog.dismiss() // Cerrar el diálogo cuando la imagen sea tocada
+        }
+    }
 
     private fun showEditDialog(context: Context, position: Int) {
         val professor = professors[position]
@@ -114,7 +158,7 @@ class CardViewAdapter(private val professors: MutableList<Professor>) :
                     specialty,
                     isTopRated,
                     description,
-                    email
+                    email,
                 )
                 notifyItemChanged(position)
             }

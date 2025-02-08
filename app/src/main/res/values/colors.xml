@@ -26,6 +26,9 @@
     <color name="purple_500">#6200EE</color>
     <color name="gray">#9E9E9E</color>
 
+    <color name="cardBorderColor">#DDDDDD</color>
+    <color name="imageBackground">#F0F0F0</color>
+
     <color name="teal_200">#BB86FC</color>
 
 

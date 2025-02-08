@@ -4,8 +4,11 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="16dp"
-    android:background="@color/cardBackground"
-    android:elevation="4dp">
+    android:background="@drawable/card_background"
+    android:layout_margin="8dp"
+    android:elevation="8dp"
+    android:clipToPadding="false"
+    android:clipChildren="false">
 
     <!-- Imagen del Profesor -->
     <ImageView
@@ -13,7 +16,8 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:scaleType="centerCrop"
-        android:layout_gravity="center" />
+        android:layout_gravity="center"
+        android:background="@drawable/image_background" />
 
     <!-- Nombre del Profesor -->
     <TextView
@@ -44,7 +48,7 @@
         android:rating="3.0"
         android:layout_marginTop="8dp"
         android:stepSize="0.5"
-        android:isIndicator="true"
+        android:isIndicator="false"
         android:layout_gravity="center" />
 
     <!-- Botón para contactar -->
@@ -64,15 +68,6 @@
         android:orientation="horizontal"
         android:gravity="center"
         android:layout_marginTop="8dp">
-
-        <ImageButton
-            android:id="@+id/buttonExpand"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_menu_sort_by_size"
-            android:backgroundTint="@color/primaryColor"
-            android:contentDescription="Expandir"
-            app:tint="@android:color/white" />
 
         <ImageButton
             android:id="@+id/buttonEdit"

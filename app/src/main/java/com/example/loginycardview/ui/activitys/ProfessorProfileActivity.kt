@@ -29,7 +29,7 @@ class ProfessorProfileActivity : AppCompatActivity() {
         val backButton:Button = findViewById(R.id.backButton)
 
         // Asignamos los datos del profesor a los elementos de la vista
-        nameTextView.text = professor?.name
+        nameTextView.text = professor?.username
         specialtyTextView.text = "Especialidad: ${professor?.specialty}"
         descriptionTextView.text = "Descripción: ${professor?.description}"
         emailTextView.text = "Email: ${professor?.email}"
@@ -45,7 +45,7 @@ class ProfessorProfileActivity : AppCompatActivity() {
             intent.type = "message/rfc822"
             intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(professor?.email))  // Usamos el email del profesor
             intent.putExtra(Intent.EXTRA_SUBJECT, "Consulta sobre clases")
-            intent.putExtra(Intent.EXTRA_TEXT, "Hola ${professor?.name}, estoy interesado en tus clases de ${professor?.specialty}.")
+            intent.putExtra(Intent.EXTRA_TEXT, "Hola ${professor?.username}, estoy interesado en tus clases de ${professor?.specialty}.")
 
             // Verificamos si hay una aplicación para enviar correos
             startActivity(Intent.createChooser(intent, "Enviar correo"))
