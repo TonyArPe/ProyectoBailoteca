@@ -6,13 +6,12 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
 
 
     <!-- Permiso para acceder a archivos en Android 11 y superior -->
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="30" />
+        android:maxSdkVersion="34" />
 
     <!-- Definir las características de hardware de la aplicación -->
     <uses-feature android:name="android.hardware.camera" android:required="false" />
@@ -27,6 +26,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LoginYCardView"
         tools:targetApi="31">
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.example.loginycardview.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"/>
+        </provider>
 
         <!-- Actividad de Login -->
         <activity

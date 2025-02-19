@@ -30,64 +30,6 @@ class PrincipalFragment : Fragment(R.layout.fragment_principal) {
         super.onViewCreated(view, savedInstanceState)
 
         requireActivity().title = "La Bailoteca"
-        Log.d("PrincipalFragment", "Fragment principal creado")
-
-        // Recuperar las preferencias compartidas
-        val sharedPref = activity?.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-
-        // Obtener el nombre de usuario desde las preferencias, o un valor predeterminado si no está guardado
-        val username = sharedPref?.getString("username", "")
-        val email = sharedPref?.getString("email", "email@dominio.com")
-        val profileImageUri = sharedPref?.getString("profileImageUri", null)
-        val isGuest = sharedPref?.getBoolean("isGuest", false) ?: false
-        val isLoggedIn = sharedPref?.getBoolean("isLoggedIn", false) ?: false
-
-        Log.d("PrincipalFragment", "Configuraciones recuperadas: isGuest = $isGuest, isLoggedIn = $isLoggedIn")
-
-        // Verificar si está logueado o en modo invitado
-        if (isGuest) {
-            // Si está en modo invitado, ocultamos el FAB
-            view.findViewById<FloatingActionButton>(R.id.fab_add)?.visibility = View.GONE
-            Log.d("PrincipalFragment", "Modo invitado, FAB oculto")
-        } else if (isLoggedIn) {
-            // Si está logueado, mostramos el FAB y permitimos que se haga clic
-            view.findViewById<FloatingActionButton>(R.id.fab_add)?.visibility = View.VISIBLE
-            view.findViewById<FloatingActionButton>(R.id.fab_add)?.setOnClickListener {
-                Log.d("PrincipalFragment", "FAB clickeado, mostrando BottomSheet")
-                showBottomNavigationDrawer()
-            }
-            Log.d("PrincipalFragment", "Modo logueado, FAB visible")
-        } else {
-            // Si no está ni logueado ni en modo invitado, ocultamos el FAB
-            view.findViewById<FloatingActionButton>(R.id.fab_add)?.visibility = View.GONE
-            Log.d("PrincipalFragment", "Usuario no logueado ni invitado, FAB oculto")
-        }
-
-        // Configuración de usuario en la vista
-        val textViewUser = view.findViewById<TextView>(R.id.textViewUser)
-        textViewUser?.text = "Bienvenido, ${username ?: "Usuario"}!"
-        Log.d("PrincipalFragment", "Texto de bienvenida: ${username ?: "Usuario"}")
-
-        val txtName = view.findViewById<TextView>(R.id.txt_name)
-        val txtEmail = view.findViewById<TextView>(R.id.txt_email)
-        txtName?.text = username
-        txtEmail?.text = email
-
-        val imageView = view.findViewById<ImageView>(R.id.image_perfil)
-        if (profileImageUri != null) {
-            // Si la URI de la imagen está presente, cargarla directamente
-            Glide.with(requireContext())
-                .load(Uri.parse(profileImageUri))
-                .placeholder(R.mipmap.ic_launcher_foreground)  // Imagen por defecto mientras se carga
-                //.into(imageView) // No olvides incluir esta línea para cargar la imagen
-            Log.d("PrincipalFragment", "Imagen de perfil cargada desde URI: $profileImageUri")
-        } else {
-            // Si no hay URI, mostrar la imagen predeterminada
-            imageView?.setImageResource(R.mipmap.ic_launcher_foreground)
-            Log.d("PrincipalFragment", "Imagen de perfil no encontrada, se usa predeterminada")
-        }
-
-        // RecyclerView para mostrar los profesores
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(activity)
 

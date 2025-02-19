@@ -1,9 +1,14 @@
 package com.example.loginycardview.ui.activitys
 
+import ItemModificationDialogFragment
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
+import android.widget.Button
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
@@ -19,7 +24,6 @@ import com.example.loginycardview.ui.fragments.VideoFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
-typealias Fragment = androidx.fragment.app.Fragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,12 +32,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var bottomNavigation: BottomNavigationView
     private lateinit var toolbar: Toolbar
     private lateinit var sharedPref: SharedPreferences
-
-    private val configuracionResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == RESULT_OK) {
-            updateNavigationHeader()
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,7 +42,6 @@ class MainActivity : AppCompatActivity() {
         setupToolbar()
         setupNavigationDrawer()
 
-        // El MainActivity debe abrir el PrincipalFragment por defecto
         if (savedInstanceState == null) {
             replaceFragment(PrincipalFragment())
         }
@@ -65,7 +62,31 @@ class MainActivity : AppCompatActivity() {
             title = "La Bailoteca"
         }
         toolbar.setNavigationOnClickListener { drawerLayout.openDrawer(GravityCompat.START) }
+        toolbar.findViewById<ImageButton>(R.id.editItemButton).setOnClickListener {
+            showItemModificationDialog()
+        }
     }
+
+
+    private fun showItemModificationDialog() {
+        ItemModificationDialogFragment().show(supportFragmentManager, "ItemModificationDialog")
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.nav_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_edit_item -> {
+                showItemModificationDialog()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
 
     private fun setupNavigationDrawer() {
         val isGuest = sharedPref.getBoolean("isGuest", false)
@@ -82,6 +103,8 @@ class MainActivity : AppCompatActivity() {
         txtEmailHeader.text = email
         if (profileImageUri != null) {
             imageLogoHeader.setImageURI(Uri.parse(profileImageUri))
+        } else {
+            imageLogoHeader.setImageResource(R.mipmap.ic_launcher_foreground)
         }
 
         navView.setNavigationItemSelectedListener { menuItem ->
@@ -92,10 +115,10 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_anuncios -> replaceFragment(EventFragment())
                 R.id.nav_generic_list -> replaceFragment(VideoFragment())
                 R.id.nav_home -> {
-                    replaceFragment(PrincipalFragment())  // Cambia a PrincipalFragment
+                    replaceFragment(PrincipalFragment())
                     drawerLayout.closeDrawer(GravityCompat.START)
                     true
-                } // Asegura que va a PrincipalFragment
+                }
                 else -> showSnackbar("Función no implementada")
             }
             drawerLayout.closeDrawer(GravityCompat.START)
@@ -109,53 +132,23 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateNavigationHeader() {
-        val headerView = navView.getHeaderView(0)
-        val txtNameHeader: TextView = headerView.findViewById(R.id.txt_name)
-        val txtEmailHeader: TextView = headerView.findViewById(R.id.txt_email)
-        val imageLogoHeader: ImageView = headerView.findViewById(R.id.image_perfil)
-
-        txtNameHeader.text = sharedPref.getString("username", "Usuario")
-        txtEmailHeader.text = sharedPref.getString("email", "ejemplo@gmail.com")
-        sharedPref.getString("profileImageUri", null)?.let {
-            imageLogoHeader.setImageURI(Uri.parse(it))
-        }
-    }
-
     private fun openInstagram() {
         startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.instagram.com/labailoteca/")))
     }
 
     private fun openSettings() {
-        replaceFragment(SettingsFragment()) // Reemplaza directamente el fragmento de configuración
+        replaceFragment(SettingsFragment())
     }
 
     private fun logoutUser() {
-        // Limpiar SharedPreferences
         sharedPref.edit().clear().apply()
-
-        // Limpiar caché (opcional)
-        clearCache()
-
-        // Notificar al servidor (opcional)
-        notifyServerLogout()
-
-        // Redirigir al usuario a la pantalla de inicio de sesión
         startActivity(Intent(this, LoginActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         })
         finish()
     }
 
-    private fun clearCache() {
-        // Código para limpiar la caché de la aplicación
-    }
-
-    private fun notifyServerLogout() {
-        // Código para notificar al servidor que el usuario ha cerrado sesión
-    }
-
-    private fun replaceFragment(fragment: Fragment) {
+    private fun replaceFragment(fragment: androidx.fragment.app.Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .commit()
@@ -165,4 +158,3 @@ class MainActivity : AppCompatActivity() {
         Snackbar.make(drawerLayout, message, Snackbar.LENGTH_SHORT).show()
     }
 }
-
