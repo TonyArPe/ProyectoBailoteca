@@ -68,6 +68,9 @@ dependencies {
 
     // Dependencias para Firebase Authentication, si se usan en la app
     implementation("com.google.firebase:firebase-auth:21.0.0")
+    implementation (platform("com.google.firebase:firebase-bom:33.7.0")) // 🔹 Mantiene todas las versiones actualizadas
+    implementation ("com.google.firebase:firebase-firestore-ktx") // 🔹 Firestore Database
+
 
     // Dependencia para Navigation, si no está incluida en libs
     implementation("androidx.navigation:navigation-fragment-ktx:2.5.0")

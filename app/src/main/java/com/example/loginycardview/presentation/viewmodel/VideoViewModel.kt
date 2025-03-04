@@ -8,6 +8,7 @@ import com.example.loginycardview.domain.usecases.SaveVideoUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,7 +23,10 @@ class VideoViewModel @Inject constructor(
 
     fun loadVideos() {
         viewModelScope.launch {
-            _videos.value = getVideosUseCase()
+            getVideosUseCase().collectLatest { videoList ->
+                _videos.value = videoList
+                println("FirestoreTest: Videos cargados en ViewModel: $videoList")
+            }
         }
     }
 

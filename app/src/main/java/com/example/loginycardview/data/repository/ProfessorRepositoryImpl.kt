@@ -1,18 +1,21 @@
 package com.example.loginycardview.data.repository
 
+import android.util.Log
 import com.example.loginycardview.R
 import com.example.loginycardview.data.local.dao.ProfessorDao
 import com.example.loginycardview.data.local.entities.ProfessorEntity
 import com.example.loginycardview.domain.Professor
 import com.example.loginycardview.domain.ProfessorRepository
+import com.google.firebase.firestore.FirebaseFirestore
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
 @Singleton
 class ProfessorRepositoryImpl @Inject constructor(
-    private val professorDao: ProfessorDao
+    private val firestore: FirebaseFirestore
 ) : ProfessorRepository {
 
     private val professorList = listOf(
@@ -27,29 +30,30 @@ class ProfessorRepositoryImpl @Inject constructor(
     )
 
     override suspend fun getProfessors(): List<Professor> {
-        return withContext(Dispatchers.IO) {
-            val dbProfessors = professorDao.getAllProfessors()
-            if (dbProfessors.isEmpty()) {
+        return try {
+            val snapshot = firestore.collection("professors").get().await()
+
+            // Si la base de datos está vacía, subimos los profesores por defecto
+            if (snapshot.isEmpty) {
                 professorList.forEach { saveProfessor(it) }
             }
-            professorDao.getAllProfessors().map {
-                Professor(it.imageResId, it.name, it.specialty, it.isTopRated, it.description, it.email)
+
+            // Volvemos a obtener los datos después de subirlos
+            firestore.collection("professors").get().await().documents.mapNotNull {
+                it.toObject(Professor::class.java)
             }
+        } catch (e: Exception) {
+            Log.e("FirestoreTest", "Error al obtener profesores: ${e.message}", e)
+            emptyList()
         }
     }
 
+
     override suspend fun saveProfessor(professor: Professor) {
-        withContext(Dispatchers.IO) {
-            professorDao.insertProfessor(
-                ProfessorEntity(
-                    imageResId = professor.imageResId,
-                    name = professor.name,
-                    specialty = professor.specialty,
-                    isTopRated = professor.isTopRated,
-                    description = professor.description,
-                    email = professor.email
-                )
-            )
+        try {
+            firestore.collection("professors").add(professor).await()
+        } catch (e: Exception) {
+            Log.e("FirestoreTest", "Error al guardar profesor: ${e.message}", e)
         }
     }
 }
