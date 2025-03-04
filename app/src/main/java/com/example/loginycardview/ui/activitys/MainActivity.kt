@@ -7,16 +7,16 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.example.loginycardview.R
+import com.example.loginycardview.presentation.viewmodel.MainViewModel
 import com.example.loginycardview.ui.fragments.EventFragment
 import com.example.loginycardview.ui.fragments.PrincipalFragment
 import com.example.loginycardview.ui.fragments.SettingsFragment
@@ -24,7 +24,9 @@ import com.example.loginycardview.ui.fragments.VideoFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint // 🔹 NECESARIO PARA HILT
 class MainActivity : AppCompatActivity() {
 
     private lateinit var drawerLayout: DrawerLayout
@@ -32,6 +34,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var bottomNavigation: BottomNavigationView
     private lateinit var toolbar: Toolbar
     private lateinit var sharedPref: SharedPreferences
+
+    private val mainViewModel: MainViewModel by viewModels() // 🔹 ViewModel con Hilt
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +47,7 @@ class MainActivity : AppCompatActivity() {
         setupNavigationDrawer()
 
         if (savedInstanceState == null) {
-            replaceFragment(PrincipalFragment())
+            replaceFragment(PrincipalFragment()) // 🔹 Se carga solo si no hay estado guardado
         }
     }
 
@@ -67,7 +71,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     private fun showItemModificationDialog() {
         ItemModificationDialogFragment().show(supportFragmentManager, "ItemModificationDialog")
     }
@@ -86,7 +89,6 @@ class MainActivity : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
     }
-
 
     private fun setupNavigationDrawer() {
         val isGuest = sharedPref.getBoolean("isGuest", false)
@@ -114,11 +116,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_logout -> logoutUser()
                 R.id.nav_anuncios -> replaceFragment(EventFragment())
                 R.id.nav_generic_list -> replaceFragment(VideoFragment())
-                R.id.nav_home -> {
-                    replaceFragment(PrincipalFragment())
-                    drawerLayout.closeDrawer(GravityCompat.START)
-                    true
-                }
+                R.id.nav_home -> replaceFragment(PrincipalFragment())
                 else -> showSnackbar("Función no implementada")
             }
             drawerLayout.closeDrawer(GravityCompat.START)
@@ -148,7 +146,11 @@ class MainActivity : AppCompatActivity() {
         finish()
     }
 
+    // 🔹 MEJORA: Evita cargar el mismo fragment dos veces
     private fun replaceFragment(fragment: androidx.fragment.app.Fragment) {
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
+        if (currentFragment?.javaClass == fragment.javaClass) return
+
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .commit()

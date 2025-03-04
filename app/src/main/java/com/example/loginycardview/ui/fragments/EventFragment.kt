@@ -5,38 +5,66 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.loginycardview.R
-import com.example.loginycardview.data.Event
+import com.example.loginycardview.databinding.FragmentEventBinding
+import com.example.loginycardview.domain.Event
+import com.example.loginycardview.presentation.viewmodel.EventViewModel
 import com.example.loginycardview.utils.EventAdapter
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class EventFragment : Fragment() {
 
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var eventAdapter: EventAdapter
-    private val eventList = mutableListOf<Event>()
+    private var _binding: FragmentEventBinding? = null
+    private val binding get() = _binding!!
+    private val eventViewModel: EventViewModel by viewModels()
+    private lateinit var eventAdapter: EventAdapter // 🔹 Se inicializa más tarde
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_event, container, false)
-        recyclerView = view.findViewById(R.id.recycler_view_events)
+    ): View {
+        _binding = FragmentEventBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         setupRecyclerView()
-        loadEvents()
-        return view
+        observeViewModel()
+        eventViewModel.loadEvents()
+
+        binding.btnAddEvent.setOnClickListener {
+            eventViewModel.saveEvent(createDummyEvent())
+        }
     }
 
     private fun setupRecyclerView() {
-        eventAdapter = EventAdapter(eventList)
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        recyclerView.adapter = eventAdapter
+        eventAdapter = EventAdapter() // 🔹 Se inicializa correctamente sin parámetros
+        binding.recyclerViewEvents.layoutManager = LinearLayoutManager(requireContext())
+        binding.recyclerViewEvents.adapter = eventAdapter
     }
 
-    private fun loadEvents() {
-        eventList.add(Event("Clase de Salsa", "2025-01-20", "Clase especial de salsa con profesores invitados."))
-        eventList.add(Event("Competencia Interna", "2025-02-10", "Evento de competencia entre estudiantes de la academia."))
-        eventAdapter.notifyDataSetChanged()
+    private fun observeViewModel() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            eventViewModel.events.collect { events ->
+                eventAdapter.updateEvents(events) // 🔹 Se usa updateEvents() en lugar de submitList()
+            }
+        }
+    }
+
+    private fun createDummyEvent() = Event(
+        title = "Nuevo Evento",
+        date = "2025-03-15",
+        description = "Este es un evento de prueba generado automáticamente."
+    )
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

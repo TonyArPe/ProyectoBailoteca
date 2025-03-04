@@ -6,9 +6,11 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.loginycardview.R
-import com.example.loginycardview.data.Event
+import com.example.loginycardview.domain.Event
 
-class EventAdapter(private val eventList: List<Event>) : RecyclerView.Adapter<EventAdapter.EventViewHolder>() {
+class EventAdapter : RecyclerView.Adapter<EventAdapter.EventViewHolder>() {
+
+    private val eventList = mutableListOf<Event>() // 🔹 Lista mutable para actualizar dinámicamente
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.event_item, parent, false)
@@ -23,6 +25,13 @@ class EventAdapter(private val eventList: List<Event>) : RecyclerView.Adapter<Ev
     }
 
     override fun getItemCount(): Int = eventList.size
+
+    // 🔹 Nueva función para actualizar la lista de eventos
+    fun updateEvents(newEvents: List<Event>) {
+        eventList.clear()
+        eventList.addAll(newEvents)
+        notifyDataSetChanged() // 🔹 Notifica a RecyclerView que los datos han cambiado
+    }
 
     class EventViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvTitle: TextView = itemView.findViewById(R.id.tv_event_title)

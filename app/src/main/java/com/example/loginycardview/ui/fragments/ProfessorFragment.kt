@@ -1,6 +1,5 @@
 package com.example.loginycardview.ui.fragments
 
-import ProfessorViewModel
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,46 +8,66 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.loginycardview.R
+import com.example.loginycardview.databinding.FragmentProfessorBinding
+import com.example.loginycardview.domain.Professor
+import com.example.loginycardview.presentation.viewmodel.ProfessorViewModel
 import com.example.loginycardview.utils.ProfessorAdapter
-import kotlinx.coroutines.flow.collectLatest
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class ProfessorFragment : Fragment() {
 
-    private lateinit var recyclerView: RecyclerView
+    private var _binding: FragmentProfessorBinding? = null
+    private val binding get() = _binding!!
+    private val professorViewModel: ProfessorViewModel by viewModels()
     private lateinit var professorAdapter: ProfessorAdapter
-    private val viewModel: ProfessorViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val view = inflater.inflate(R.layout.fragment_professor, container, false)
-        recyclerView = view.findViewById(R.id.recycler_view_professors)
-        setupRecyclerView()
-        observeProfessors()
-        return view
-    }
-
-    private fun setupRecyclerView() {
-        professorAdapter = ProfessorAdapter(mutableListOf()) // Usar una lista mutable
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        recyclerView.adapter = professorAdapter
+        _binding = FragmentProfessorBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.loadProfessors() // Asegúrate de que el ViewModel tiene esta función
+
+        setupRecyclerView()
+        observeViewModel()
+        professorViewModel.loadProfessors()
+
+        binding.btnAddProfessor.setOnClickListener {
+            professorViewModel.saveProfessor(createDummyProfessor())
+        }
     }
 
+    private fun setupRecyclerView() {
+        professorAdapter = ProfessorAdapter()
+        binding.recyclerViewProfessors.layoutManager = LinearLayoutManager(requireContext())
+        binding.recyclerViewProfessors.adapter = professorAdapter
+    }
 
-    private fun observeProfessors() {
+    private fun observeViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.professors.collectLatest { professors ->
-                professorAdapter.updateData(professors) // No hagas conversiones aquí
+            professorViewModel.professors.collect { professors ->
+                professorAdapter.updateProfessors(professors)
             }
         }
+    }
+
+    private fun createDummyProfessor() = Professor(
+        imageResId = 0,
+        name = "Nuevo Profesor",
+        specialty = "Danza",
+        isTopRated = true,
+        description = "Profesor de prueba generado automáticamente.",
+        email = "test@example.com"
+    )
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
