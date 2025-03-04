@@ -1,5 +1,6 @@
 package com.example.loginycardview.presentation.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.loginycardview.domain.Professor
@@ -22,9 +23,12 @@ class ProfessorViewModel @Inject constructor(
 
     fun loadProfessors() {
         viewModelScope.launch {
-            _professors.value = getProfessorsUseCase()
+            val professorsList = getProfessorsUseCase()
+            _professors.value = professorsList // 🔹 Actualizamos el estado
+            Log.d("ProfessorViewModel", "Profesores obtenidos: ${professorsList.size}")
         }
     }
+
 
     fun saveProfessor(professor: Professor) {
         viewModelScope.launch {

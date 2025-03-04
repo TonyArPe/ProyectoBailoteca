@@ -5,61 +5,77 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
-    android:background="#FFFFFF"
-    android:gravity="center">
+    android:gravity="center"
+    android:background="@drawable/gradient_background">
 
-    <ImageView
-        android:id="@+id/imageView2"
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="2"
-        app:srcCompat="@mipmap/ic_profile_foreground" />
+        app:cardCornerRadius="12dp"
+        app:cardElevation="8dp"
+        android:padding="20dp">
 
-    <EditText
-        android:id="@+id/editTextUsernameRegister"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Nombre de Usuario"
-        android:inputType="textPersonName"
-        android:padding="12dp"
-        android:background="@drawable/input_background"
-        android:layout_marginBottom="12dp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/editTextEmail"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Correo Electrónico"
-        android:inputType="textEmailAddress"
-        android:padding="12dp"
-        android:background="@drawable/input_background"
-        android:layout_marginBottom="12dp" />
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center"
+                android:src="@mipmap/ic_profile_foreground"
+                android:layout_marginBottom="16dp" />
 
-    <EditText
-        android:id="@+id/editTextPasswordRegister"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Contraseña"
-        android:inputType="textPassword"
-        android:padding="12dp"
-        android:background="@drawable/input_background"
-        android:layout_marginBottom="12dp" />
+            <EditText
+                android:id="@+id/editTextUsernameRegister"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Nombre de Usuario"
+                android:inputType="textPersonName"
+                android:padding="12dp"
+                android:background="@drawable/input_background"
+                android:layout_marginBottom="12dp" />
 
-    <Button
-        android:id="@+id/buttonSave"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Registrar"
-        android:textColor="#FFFFFF"
-        android:background="@drawable/btn_register_background"
-        android:layout_marginBottom="16dp" />
+            <EditText
+                android:id="@+id/editTextEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Correo Electrónico"
+                android:inputType="textEmailAddress"
+                android:padding="12dp"
+                android:background="@drawable/input_background"
+                android:layout_marginBottom="12dp" />
 
-    <Button
-        android:id="@+id/buttonCancel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Cancelar"
-        android:textColor="#FFFFFF"
-        android:background="@drawable/btn_cancel_background" />
+            <EditText
+                android:id="@+id/editTextPasswordRegister"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Contraseña"
+                android:inputType="textPassword"
+                android:padding="12dp"
+                android:background="@drawable/input_background"
+                android:layout_marginBottom="12dp" />
+
+            <Button
+                android:id="@+id/buttonSave"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Registrar"
+                android:textColor="#FFFFFF"
+                android:background="@drawable/btn_register_background"
+                android:layout_marginBottom="16dp" />
+
+            <Button
+                android:id="@+id/buttonCancel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Cancelar"
+                android:textColor="#FFFFFF"
+                android:background="@drawable/btn_cancel_background" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
 
 </LinearLayout>

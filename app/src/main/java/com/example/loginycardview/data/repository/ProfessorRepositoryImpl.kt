@@ -33,12 +33,12 @@ class ProfessorRepositoryImpl @Inject constructor(
         return try {
             val snapshot = firestore.collection("professors").get().await()
 
-            // Si la base de datos está vacía, subimos los profesores por defecto
             if (snapshot.isEmpty) {
+                // 🔹 Subimos la lista por defecto si Firestore está vacío
                 professorList.forEach { saveProfessor(it) }
             }
 
-            // Volvemos a obtener los datos después de subirlos
+            // 🔹 Volvemos a obtener los datos desde Firestore después de subirlos
             firestore.collection("professors").get().await().documents.mapNotNull {
                 it.toObject(Professor::class.java)
             }
@@ -47,6 +47,7 @@ class ProfessorRepositoryImpl @Inject constructor(
             emptyList()
         }
     }
+
 
 
     override suspend fun saveProfessor(professor: Professor) {

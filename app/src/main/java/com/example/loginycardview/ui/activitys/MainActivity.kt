@@ -1,14 +1,9 @@
 package com.example.loginycardview.ui.activitys
 
-import ItemModificationDialogFragment
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
-import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.viewModels
@@ -16,8 +11,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.lifecycleScope
 import com.example.loginycardview.R
-import com.example.loginycardview.presentation.viewmodel.MainViewModel
+import com.example.loginycardview.presentation.viewmodel.AuthViewModel
+import com.example.loginycardview.ui.activities.LoginActivity
 import com.example.loginycardview.ui.fragments.EventFragment
 import com.example.loginycardview.ui.fragments.PrincipalFragment
 import com.example.loginycardview.ui.fragments.SettingsFragment
@@ -25,10 +22,11 @@ import com.example.loginycardview.ui.fragments.VideoFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
-@AndroidEntryPoint // 🔹 NECESARIO PARA HILT
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private lateinit var drawerLayout: DrawerLayout
@@ -37,33 +35,54 @@ class MainActivity : AppCompatActivity() {
     private lateinit var toolbar: Toolbar
     private lateinit var sharedPref: SharedPreferences
 
-    private val mainViewModel: MainViewModel by viewModels() // 🔹 ViewModel con Hilt
+    private val authViewModel: AuthViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        sharedPref = getSharedPreferences("UserPrefs", MODE_PRIVATE)
 
-        val db = FirebaseFirestore.getInstance()
 
-        // 🔹 Verifica si Firestore responde
-        db.collection("videos")
-            .get()
-            .addOnSuccessListener { documents ->
-                for (document in documents) {
-                    Log.d("FirestoreTest", "Documento: ${document.id} => ${document.data}")
+        initViews()
+
+        lifecycleScope.launch {
+            authViewModel.currentUser.collectLatest { user ->
+                if (user == null) {
+                    startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+                    finish()
                 }
             }
-            .addOnFailureListener { exception ->
-                Log.e("FirestoreTest", "Error obteniendo documentos", exception)
-            }
+        }
 
-        sharedPref = getSharedPreferences("UserPrefs", MODE_PRIVATE)
-        initViews()
+        setupUserData()
         setupToolbar()
         setupNavigationDrawer()
+        observeAuthState()
+
 
         if (savedInstanceState == null) {
-            replaceFragment(PrincipalFragment()) // 🔹 Se carga solo si no hay estado guardado
+            replaceFragment(PrincipalFragment())
+        }
+    }
+
+    private fun setupUserData() {
+        val headerView = navView.getHeaderView(0)
+        val txtNameHeader: TextView = headerView.findViewById(R.id.txt_name)
+        val txtEmailHeader: TextView = headerView.findViewById(R.id.txt_email)
+        val imageLogoHeader: ImageView = headerView.findViewById(R.id.image_perfil)
+
+        lifecycleScope.launch {
+            authViewModel.currentUser.collect { username ->
+                txtNameHeader.text = (username ?: "Usuario").toString()
+            }
+        }
+
+        lifecycleScope.launch {
+            authViewModel.isLoggedIn.collect { isLoggedIn ->
+                navView.menu.findItem(R.id.nav_settings).isVisible = isLoggedIn
+                navView.menu.findItem(R.id.nav_anuncios).isVisible = isLoggedIn
+                navView.menu.findItem(R.id.nav_generic_list).isVisible = true
+            }
         }
     }
 
@@ -82,49 +101,10 @@ class MainActivity : AppCompatActivity() {
             title = "La Bailoteca"
         }
         toolbar.setNavigationOnClickListener { drawerLayout.openDrawer(GravityCompat.START) }
-        toolbar.findViewById<ImageButton>(R.id.editItemButton).setOnClickListener {
-            showItemModificationDialog()
-        }
     }
 
-    private fun showItemModificationDialog() {
-        ItemModificationDialogFragment().show(supportFragmentManager, "ItemModificationDialog")
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.nav_menu, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.action_edit_item -> {
-                showItemModificationDialog()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
+    // 🔹 Método restaurado para configurar el menú lateral (Navigation Drawer)
     private fun setupNavigationDrawer() {
-        val isGuest = sharedPref.getBoolean("isGuest", false)
-        val headerView = navView.getHeaderView(0)
-        val txtNameHeader: TextView = headerView.findViewById(R.id.txt_name)
-        val txtEmailHeader: TextView = headerView.findViewById(R.id.txt_email)
-        val imageLogoHeader: ImageView = headerView.findViewById(R.id.image_perfil)
-
-        val username = sharedPref.getString("username", "Usuario")
-        val email = sharedPref.getString("email", "ejemplo@gmail.com")
-        val profileImageUri = sharedPref.getString("profileImageUri", null)
-
-        txtNameHeader.text = username
-        txtEmailHeader.text = email
-        if (profileImageUri != null) {
-            imageLogoHeader.setImageURI(Uri.parse(profileImageUri))
-        } else {
-            imageLogoHeader.setImageResource(R.mipmap.ic_launcher_foreground)
-        }
-
         navView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.nav_instagram -> openInstagram()
@@ -138,23 +118,38 @@ class MainActivity : AppCompatActivity() {
             drawerLayout.closeDrawer(GravityCompat.START)
             true
         }
+    }
 
-        if (isGuest) {
-            navView.menu.findItem(R.id.nav_settings).isVisible = false
-            navView.menu.findItem(R.id.nav_anuncios).isVisible = false
-            navView.menu.findItem(R.id.nav_generic_list).isVisible = true
+    private fun observeAuthState() {
+        val headerView = navView.getHeaderView(0)
+        val txtNameHeader: TextView = headerView.findViewById(R.id.txt_name)
+        val txtEmailHeader: TextView = headerView.findViewById(R.id.txt_email)
+        val imageLogoHeader: ImageView = headerView.findViewById(R.id.image_perfil)
+
+        lifecycleScope.launch {
+            authViewModel.isLoggedIn.collectLatest { isLoggedIn ->
+                val username = sharedPref.getString("username", "Usuario")
+                val email = sharedPref.getString("email", "ejemplo@gmail.com")
+                val profileImageUri = sharedPref.getString("profileImageUri", null)
+
+                txtNameHeader.text = username
+                txtEmailHeader.text = email
+
+                if (profileImageUri != null) {
+                    imageLogoHeader.setImageURI(Uri.parse(profileImageUri))
+                } else {
+                    imageLogoHeader.setImageResource(R.mipmap.ic_launcher_foreground)
+                }
+
+                navView.menu.findItem(R.id.nav_settings).isVisible = isLoggedIn
+                navView.menu.findItem(R.id.nav_anuncios).isVisible = isLoggedIn
+                navView.menu.findItem(R.id.nav_generic_list).isVisible = true
+            }
         }
     }
 
-    private fun openInstagram() {
-        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.instagram.com/labailoteca/")))
-    }
-
-    private fun openSettings() {
-        replaceFragment(SettingsFragment())
-    }
-
     private fun logoutUser() {
+        authViewModel.logout()
         sharedPref.edit().clear().apply()
         startActivity(Intent(this, LoginActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -162,7 +157,17 @@ class MainActivity : AppCompatActivity() {
         finish()
     }
 
-    // 🔹 MEJORA: Evita cargar el mismo fragment dos veces
+    private fun openInstagram() {
+        val uri = Uri.parse("https://www.instagram.com/labailoteca/")
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+        startActivity(intent)
+    }
+
+    private fun openSettings() {
+        replaceFragment(SettingsFragment())
+    }
+
+
     private fun replaceFragment(fragment: androidx.fragment.app.Fragment) {
         val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
         if (currentFragment?.javaClass == fragment.javaClass) return

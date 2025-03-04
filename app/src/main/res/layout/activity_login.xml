@@ -1,85 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
     android:orientation="vertical"
-    android:padding="16dp"
-    android:gravity="center">
+    android:gravity="center"
+    android:padding="20dp"
+    android:background="@drawable/gradient_background">
 
+    <!-- Logo de la App -->
     <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_gravity="center"
-        android:layout_marginBottom="16dp"
-        android:src="@mipmap/ic_launcher_foreground" />
-
-    <AutoCompleteTextView
-        android:id="@+id/editTextUsername"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Correo Electrónico"
-        android:inputType="textEmailAddress"
-        android:textColor="@color/black"
-        android:textColorHint="#6F6F6F"
-        android:padding="12dp"
-        android:background="@drawable/input_background"
-        android:layout_marginBottom="12dp" />
-
-    <EditText
-        android:id="@+id/editTextPassword"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Contraseña"
-        android:inputType="textPassword"
-        android:textColor="@color/black"
-        android:textColorHint="#6F6F6F"
-        android:padding="12dp"
-        android:background="@drawable/input_background"
+        android:id="@+id/imageViewLogo"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:src="@mipmap/ic_launcher_foreground"
         android:layout_marginBottom="16dp" />
 
-    <Button
-        android:id="@+id/buttonLogin"
+    <!-- Caja de Inicio de Sesión -->
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/btn_login_background"
-        android:padding="12dp"
-        android:text="Iniciar Sesión"
-        android:textColor="#FFFFFF"
-        android:textSize="16sp" />
+        app:cardCornerRadius="16dp"
+        app:cardElevation="8dp"
+        android:padding="20dp"
+        android:background="@color/white">
 
-    <Button
-        android:id="@+id/buttonRegister"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Registrar"
-        android:textSize="16sp"
-        android:textColor="#FFFFFF"
-        android:background="@drawable/btn_register_background"
-        android:padding="12dp"
-        android:layout_marginBottom="16dp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-    <Button
-        android:id="@+id/buttonForgotPassword"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/btn_forgot_password_background"
-        android:padding="12dp"
-        android:text="¿Olvidaste tu contraseña?"
-        android:textColor="@color/black"
-        android:textSize="14sp" />
+            <!-- Campo de Correo Electrónico -->
+            <EditText
+                android:id="@+id/editTextUsername"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Correo Electrónico"
+                android:inputType="textEmailAddress"
+                android:textColor="@color/black"
+                android:textColorHint="@color/gray"
+                android:padding="12dp"
+                android:background="@drawable/input_background"
+                android:layout_marginBottom="12dp" />
 
-    <Button
-        android:id="@+id/buttonGuestLogin"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:padding="12dp"
-        android:text="Entrar como Invitado"
-        android:textColor="#FFFFFF"
-        android:textSize="16sp" />
+            <!-- Campo de Contraseña -->
+            <EditText
+                android:id="@+id/editTextPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Contraseña"
+                android:inputType="textPassword"
+                android:textColor="@color/black"
+                android:textColorHint="@color/gray"
+                android:padding="12dp"
+                android:background="@drawable/input_background"
+                android:layout_marginBottom="16dp" />
 
+            <!-- Botón de Inicio de Sesión -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonLogin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Iniciar Sesión"
+                app:cornerRadius="12dp"
+                android:backgroundTint="@color/purple_500"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:layout_marginBottom="12dp"/>
 
+            <!-- Botón de Registro -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonRegister"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Crear Cuenta"
+                app:cornerRadius="12dp"
+                android:backgroundTint="@color/purple_700"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:layout_marginBottom="12dp"/>
+
+            <!-- Botón de Recuperar Contraseña -->
+            <TextView
+                android:id="@+id/buttonForgotPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="¿Olvidaste tu contraseña?"
+                android:textColor="@color/purple_500"
+                android:textSize="14sp"
+                android:gravity="center"
+                android:layout_marginBottom="12dp" />
+
+            <!-- Botón de Modo Invitado -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonGuestLogin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Entrar como Invitado"
+                app:cornerRadius="12dp"
+                android:backgroundTint="@color/gray"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:layout_marginBottom="12dp"/>
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
 </LinearLayout>

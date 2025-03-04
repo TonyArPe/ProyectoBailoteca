@@ -1,69 +1,61 @@
 package com.example.loginycardview.ui.activitys
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.example.loginycardview.R
-import com.google.firebase.auth.FirebaseAuth
+import com.example.loginycardview.databinding.ActivityRegisterBinding
+import com.example.loginycardview.presentation.viewmodel.AuthViewModel
+import com.example.loginycardview.ui.activities.LoginActivity
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class RegisterActivity : AppCompatActivity() {
-    private lateinit var auth: FirebaseAuth
+
+    private lateinit var binding: ActivityRegisterBinding
+    private val authViewModel: AuthViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_register)
+        binding = ActivityRegisterBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        auth = FirebaseAuth.getInstance()
+        setupListeners()
+    }
 
-        val editTextUsername = findViewById<EditText>(R.id.editTextUsernameRegister)
-        val editTextEmail = findViewById<EditText>(R.id.editTextEmail)
-        val editTextPassword = findViewById<EditText>(R.id.editTextPasswordRegister)
-        val buttonSave = findViewById<Button>(R.id.buttonSave)
-        val buttonCancel = findViewById<Button>(R.id.buttonCancel)
-
-        buttonSave.setOnClickListener {
-            val username = editTextUsername.text.toString().trim()
-            val email = editTextEmail.text.toString().trim()
-            val password = editTextPassword.text.toString().trim()
+    private fun setupListeners() {
+        binding.buttonSave.setOnClickListener {
+            val username = binding.editTextUsernameRegister.text.toString().trim()
+            val email = binding.editTextEmail.text.toString().trim()
+            val password = binding.editTextPasswordRegister.text.toString().trim()
 
             if (username.isEmpty() || email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Por favor, completa todos los campos", Toast.LENGTH_SHORT).show()
+                showToast("Por favor, completa todos los campos")
                 return@setOnClickListener
             }
 
-            auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    // Guardar los datos en SharedPreferences
-                    val sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-                    with(sharedPref.edit()) {
-                        putString("username", username)
-                        putString("email", email)
-                        putBoolean("isLoggedIn", false) // Aún no está logueado hasta que verifique el correo
-                        apply()
-                    }
-
-                    auth.currentUser?.sendEmailVerification()?.addOnCompleteListener { verificationTask ->
-                        if (verificationTask.isSuccessful) {
-                            Toast.makeText(this, "Registro exitoso. Verifica tu correo", Toast.LENGTH_SHORT).show()
-                            startActivity(Intent(this, LoginActivity::class.java))
-                            finish()
-                        } else {
-                            Toast.makeText(this, "Error al enviar correo de verificación", Toast.LENGTH_SHORT).show()
-                        }
-                    }
+            authViewModel.registerUser(email, password, username) { success, message ->
+                if (success) {
+                    showToast("Registro exitoso. Verifica tu correo electrónico.")
+                    navigateToLogin()
                 } else {
-                    Toast.makeText(this, "Error al registrar: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                    showToast("Error al registrar: $message")
                 }
             }
         }
 
-        buttonCancel.setOnClickListener {
-            startActivity(Intent(this, LoginActivity::class.java))
-            finish()
+        binding.buttonCancel.setOnClickListener {
+            navigateToLogin()
         }
+    }
+
+    private fun navigateToLogin() {
+        startActivity(Intent(this, LoginActivity::class.java))
+        finish()
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }
