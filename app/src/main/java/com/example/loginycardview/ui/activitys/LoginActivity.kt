@@ -1,4 +1,4 @@
-package com.example.loginycardview.ui.activities
+package com.example.loginycardview.ui.activitys
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,8 +7,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.loginycardview.databinding.ActivityLoginBinding
 import com.example.loginycardview.presentation.viewmodel.AuthViewModel
-import com.example.loginycardview.ui.activitys.MainActivity
-import com.example.loginycardview.ui.activitys.RegisterActivity
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -23,20 +22,22 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.buttonLogin.setOnClickListener {
-            val email = binding.editTextUsername.text.toString().trim()
-            val password = binding.editTextPassword.text.toString().trim()
+            val email = binding.editTextUsername.text.toString()
+            val password = binding.editTextPassword.text.toString()
 
-            if (email.isEmpty() || password.isEmpty()) {
-                showToast("Completa todos los campos")
-                return@setOnClickListener
-            }
-
-            authViewModel.login(email, password) { success ->
-                if (success) {
-                    navigateToMain()
-                } else {
-                    showToast("Error en login")
-                }
+            if (email.isNotEmpty() && password.isNotEmpty()) {
+                FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            // Redirigir a MainActivity después del login exitoso
+                            startActivity(Intent(this, MainActivity::class.java))
+                            finish() // 🔹 Evita que el usuario regrese a LoginActivity
+                        } else {
+                            Toast.makeText(this, "Error al iniciar sesión", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+            } else {
+                Toast.makeText(this, "Completa todos los campos", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -71,4 +72,15 @@ class LoginActivity : AppCompatActivity() {
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
+
+    override fun onStart() {
+        super.onStart()
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user != null) {
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+        }
+    }
 }
+
+

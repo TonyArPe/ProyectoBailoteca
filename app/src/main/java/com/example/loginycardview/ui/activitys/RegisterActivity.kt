@@ -7,7 +7,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.loginycardview.databinding.ActivityRegisterBinding
 import com.example.loginycardview.presentation.viewmodel.AuthViewModel
-import com.example.loginycardview.ui.activities.LoginActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

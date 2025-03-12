@@ -67,8 +67,9 @@ dependencies {
     implementation("com.applandeo:material-calendar-view:1.9.2")
 
     // Dependencias para Firebase Authentication, si se usan en la app
-    implementation("com.google.firebase:firebase-auth:21.0.0")
-    implementation (platform("com.google.firebase:firebase-bom:33.7.0")) // 🔹 Mantiene todas las versiones actualizadas
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.android.gms:play-services-auth:21.0.0")
+    implementation(platform("com.google.firebase:firebase-bom:32.8.0")) // 🔹 Mantiene todas las versiones actualizadas
     implementation ("com.google.firebase:firebase-firestore-ktx") // 🔹 Firestore Database
 
 

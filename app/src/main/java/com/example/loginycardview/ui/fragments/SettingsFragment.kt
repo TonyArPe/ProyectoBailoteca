@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -19,6 +20,8 @@ import com.example.loginycardview.R
 import com.example.loginycardview.databinding.FragmentSettingsBinding
 import com.example.loginycardview.ui.activitys.MainActivity
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import de.hdodenhof.circleimageview.CircleImageView
 import java.io.InputStream
 
@@ -76,29 +79,50 @@ class SettingsFragment : Fragment() {
         // Guardar cambios en el perfil
         binding.buttonSaveSettings.setOnClickListener {
             var cambio = false
+            val sharedPreferences = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+            val user = FirebaseAuth.getInstance().currentUser
 
-            if (uriImagen != Uri.EMPTY) {
-                mostrarImagenDesdeUri(uriImagen)
-                imagePerfil.setImageURI(uriImagen) // Actualizar imagen en NavigationView
-                sharedPreferences.edit().putString("uri", uriImagen.toString()).apply()
-                cambio = true
-            }
+            if (user != null) {
+                val firestore = FirebaseFirestore.getInstance()
+                val userRef = firestore.collection("users").document(user.uid)
 
-            val newUsername = binding.editTextUsername.text.toString()
-            val currentUsername = txtName.text.toString()
+                val newUsername = binding.editTextUsername.text.toString()
+                val profileImageUri = uriImagen.toString()
 
-            if (newUsername.isNotEmpty() && newUsername != currentUsername) {
-                txtName.text = newUsername
-                sharedPreferences.edit().putString("username", newUsername).apply()
-                cambio = true
+                val updates = mutableMapOf<String, Any>()
+                if (newUsername.isNotEmpty()) {
+                    updates["username"] = newUsername
+                    sharedPreferences.edit().putString("username", newUsername).apply()
+                    cambio = true
+                }
+                if (profileImageUri.isNotEmpty()) {
+                    updates["profileImageUri"] = profileImageUri
+                    sharedPreferences.edit().putString("profileImageUri", profileImageUri).apply()
+                    cambio = true
+                }
+
+                userRef.update(updates)
+                    .addOnSuccessListener {
+                        Log.d("SettingsFragment", "Datos actualizados en Firestore")
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("SettingsFragment", "Error al actualizar Firestore", e)
+                    }
+
+                // **Actualizar Navigation Drawer**
+                actualizarHeader()
             }
 
             if (cambio) {
-                Toast.makeText(mainActivity, R.string.perfil_actualizado, Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Perfil actualizado", Toast.LENGTH_SHORT).show()
             } else {
-                Toast.makeText(mainActivity, R.string.no_cambios, Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "No hay cambios", Toast.LENGTH_SHORT).show()
             }
         }
+
+
+
+
 
         binding.buttonBack.setOnClickListener {
             parentFragmentManager.beginTransaction()
@@ -121,11 +145,41 @@ class SettingsFragment : Fragment() {
             val bitmap = BitmapFactory.decodeStream(inputStream)
             binding.imageViewProfile.setImageBitmap(bitmap)
             inputStream?.close()
+
+            // Guardar la URI en SharedPreferences
+            val sharedPreferences = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+            sharedPreferences.edit().putString("profileImageUri", uri.toString()).apply()
         } catch (e: Exception) {
             Toast.makeText(requireContext(), "Error al cargar la imagen", Toast.LENGTH_SHORT).show()
             e.printStackTrace()
         }
     }
+
+
+    private fun actualizarHeader() {
+        val mainActivity = requireActivity() as MainActivity
+        val sharedPreferences = mainActivity.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+
+        val navView = mainActivity.findViewById<NavigationView>(R.id.nav_view)
+        val headerView = navView.getHeaderView(0)
+        val imagePerfil = headerView.findViewById<CircleImageView>(R.id.image_perfil)
+        val txtName = headerView.findViewById<TextView>(R.id.txt_name)
+        val txtEmail = headerView.findViewById<TextView>(R.id.txt_email)
+
+        val username = sharedPreferences.getString("username", "Usuario")
+        val email = sharedPreferences.getString("email", FirebaseAuth.getInstance().currentUser?.email ?: "ejemplo@gmail.com")
+        val profileImageUri = sharedPreferences.getString("profileImageUri", null)
+
+        txtName.text = username
+        txtEmail.text = email
+
+        if (profileImageUri != null) {
+            imagePerfil.setImageURI(Uri.parse(profileImageUri))
+        } else {
+            imagePerfil.setImageResource(R.drawable.ic_placeholder)
+        }
+    }
+
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)

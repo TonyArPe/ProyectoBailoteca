@@ -40,7 +40,7 @@
 
         <!-- Actividad de Login -->
         <activity
-            android:name=".ui.activities.LoginActivity"
+            android:name=".ui.activitys.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

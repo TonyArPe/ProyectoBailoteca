@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.loginycardview.databinding.FragmentEventBinding
 import com.example.loginycardview.domain.Event
 import com.example.loginycardview.presentation.viewmodel.EventViewModel
+import com.example.loginycardview.ui.dialogs.EventDialogFragment
 import com.example.loginycardview.utils.EventAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -21,7 +22,7 @@ class EventFragment : Fragment() {
     private var _binding: FragmentEventBinding? = null
     private val binding get() = _binding!!
     private val eventViewModel: EventViewModel by viewModels()
-    private lateinit var eventAdapter: EventAdapter // 🔹 Se inicializa más tarde
+    private lateinit var eventAdapter: EventAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,37 +35,36 @@ class EventFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupRecyclerView()
-        observeViewModel()
-        eventViewModel.loadEvents()
+        eventAdapter = EventAdapter(emptyList(), ::showEditDialog, ::deleteEvent)
 
-        binding.btnAddEvent.setOnClickListener {
-            eventViewModel.saveEvent(createDummyEvent())
+        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.recyclerView.adapter = eventAdapter
+
+        eventViewModel.events.observe(viewLifecycleOwner) { events ->
+            eventAdapter.updateEvents(events)
+        }
+
+        binding.buttonAddEvent.setOnClickListener {
+            showAddDialog()
         }
     }
 
-    private fun setupRecyclerView() {
-        eventAdapter = EventAdapter() // 🔹 Se inicializa correctamente sin parámetros
-        binding.recyclerViewEvents.layoutManager = LinearLayoutManager(requireContext())
-        binding.recyclerViewEvents.adapter = eventAdapter
+    private fun showAddDialog() {
+        EventDialogFragment { event -> eventViewModel.addEvent(event) }
+            .show(parentFragmentManager, "AddEventDialog")
     }
 
-    private fun observeViewModel() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            eventViewModel.events.collect { events ->
-                eventAdapter.updateEvents(events) // 🔹 Se usa updateEvents() en lugar de submitList()
-            }
-        }
+    private fun showEditDialog(event: Event) {
+        EventDialogFragment(event) { updatedEvent -> eventViewModel.updateEvent(updatedEvent) }
+            .show(parentFragmentManager, "EditEventDialog")
     }
 
-    private fun createDummyEvent() = Event(
-        title = "Nuevo Evento",
-        date = "2025-03-15",
-        description = "Este es un evento de prueba generado automáticamente."
-    )
+    private fun deleteEvent(eventId: String) {
+        eventViewModel.deleteEvent(eventId)
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding = null
+        _binding = null // Evita memory leaks
     }
 }

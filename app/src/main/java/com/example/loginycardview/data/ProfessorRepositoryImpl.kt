@@ -1,33 +1,35 @@
 package com.example.loginycardview.data
 
-import com.example.loginycardview.R
+import android.util.Log
 import com.example.loginycardview.domain.Professor
 import com.example.loginycardview.domain.ProfessorRepository
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.tasks.await
 
 class ProfessorRepositoryImpl : ProfessorRepository {
+
+    private val firestore = FirebaseFirestore.getInstance()
+
     override suspend fun getProfessors(): List<Professor> {
-        return listOf(
-            Professor(
-                imageResId = R.drawable.professor1,
-                name = "Juan Pérez",
-                specialty = "Salsa",
-                isTopRated = true,
-                description = "Instructor experto en Salsa Cubana",
-                email = "juan@example.com"
-            ),
-            Professor(
-                imageResId = R.drawable.professor2,
-                name = "María López",
-                specialty = "Bachata",
-                isTopRated = false,
-                description = "Especialista en bachata sensual",
-                email = "maria@example.com"
-            )
-        )
+        return try {
+            val snapshot = firestore.collection("professors").get().await()
+            snapshot.documents.mapNotNull { doc ->
+                doc.toObject(Professor::class.java)?.copy(id = doc.id) // 🔹 Asigna el ID desde Firestore
+            }
+        } catch (e: Exception) {
+            Log.e("ProfessorRepositoryImpl", "Error al obtener profesores", e)
+            emptyList()
+        }
     }
 
-
     override suspend fun saveProfessor(professor: Professor) {
-        // Aquí iría la lógica para guardar un profesor en la base de datos
+        try {
+            val docRef = firestore.collection("professors").document()
+            val professorWithId = professor.copy(id = docRef.id)
+            docRef.set(professorWithId).await()
+            Log.d("ProfessorRepositoryImpl", "Profesor guardado correctamente en Firestore")
+        } catch (e: Exception) {
+            Log.e("ProfessorRepositoryImpl", "Error al guardar profesor en Firestore", e)
+        }
     }
 }

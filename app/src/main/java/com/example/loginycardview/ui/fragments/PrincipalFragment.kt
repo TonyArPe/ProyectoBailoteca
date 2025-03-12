@@ -9,7 +9,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.loginycardview.R
+import com.example.loginycardview.databinding.FragmentPrincipalBinding
+import com.example.loginycardview.domain.Professor
 import com.example.loginycardview.presentation.viewmodel.ProfessorViewModel
+import com.example.loginycardview.ui.dialogs.EditProfessorDialogFragment
 import com.example.loginycardview.utils.ProfessorAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -19,21 +22,26 @@ class PrincipalFragment : Fragment(R.layout.fragment_principal) {
 
     private val professorViewModel: ProfessorViewModel by viewModels()
     private lateinit var professorAdapter: ProfessorAdapter
+    private var _binding: FragmentPrincipalBinding? = null
+    private val binding get() = _binding!!
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        _binding = FragmentPrincipalBinding.bind(view)
 
         requireActivity().title = "La Bailoteca"
-        val recyclerView = view.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.recyclerView)
-        recyclerView.layoutManager = LinearLayoutManager(activity)
 
-        professorAdapter = ProfessorAdapter()
-        recyclerView.adapter = professorAdapter
+        // Configurar RecyclerView
+        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        professorAdapter = ProfessorAdapter(::showEditProfessorDialog, ::deleteProfessor)
+        binding.recyclerView.adapter = professorAdapter
 
-        observeProfessors()
+        observeProfessors() // 🔹 Observamos los cambios en Firestore
 
-        // 🔹 Forzamos la carga de datos desde Firestore
-        professorViewModel.loadProfessors()
+        professorViewModel.loadProfessors() // 🔹 Cargamos los profesores al iniciar
+
+        // Botón para agregar un nuevo profesor
+        binding.fabAdd.setOnClickListener { showAddProfessorDialog() }
     }
 
     private fun observeProfessors() {
@@ -50,9 +58,10 @@ class PrincipalFragment : Fragment(R.layout.fragment_principal) {
 
     private fun showAddProfessorDialog() {
         val addDialog = AddProfessorDialogFragment { newProfessor ->
-            val professor = com.example.loginycardview.domain.Professor( // 🔹 Referencia correcta
-                imageResId = newProfessor.imageResId ?: 0, // 🔹 Asegurar que no sea nulo
-                name = newProfessor.username, // 🔹 Asegurar que `username` es el nombre
+            val professor = Professor(
+                id = "", // Firestore asignará un ID automáticamente
+                imageUrl = newProfessor.imageUrl,
+                name = newProfessor.name,
                 specialty = newProfessor.specialty,
                 isTopRated = newProfessor.isTopRated,
                 description = newProfessor.description,
@@ -64,4 +73,21 @@ class PrincipalFragment : Fragment(R.layout.fragment_principal) {
         addDialog.show(parentFragmentManager, "AddProfessorDialog")
     }
 
+    private fun showEditProfessorDialog(professor: Professor) {
+        val editDialog = EditProfessorDialogFragment(professor) { updatedProfessor ->
+            professorViewModel.saveProfessor(updatedProfessor)
+            Toast.makeText(requireContext(), "Profesor actualizado", Toast.LENGTH_SHORT).show()
+        }
+        editDialog.show(parentFragmentManager, "EditProfessorDialog")
+    }
+
+    private fun deleteProfessor(professor: Professor) {
+        professorViewModel.deleteProfessor(professor.id)
+        Toast.makeText(requireContext(), "Profesor eliminado", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 }

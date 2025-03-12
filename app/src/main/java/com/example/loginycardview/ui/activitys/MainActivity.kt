@@ -14,7 +14,6 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
 import com.example.loginycardview.R
 import com.example.loginycardview.presentation.viewmodel.AuthViewModel
-import com.example.loginycardview.ui.activities.LoginActivity
 import com.example.loginycardview.ui.fragments.EventFragment
 import com.example.loginycardview.ui.fragments.PrincipalFragment
 import com.example.loginycardview.ui.fragments.SettingsFragment
@@ -22,6 +21,7 @@ import com.example.loginycardview.ui.fragments.VideoFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -42,6 +42,13 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         sharedPref = getSharedPreferences("UserPrefs", MODE_PRIVATE)
 
+        // Verificar si el usuario está autenticado
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user == null) {
+            // Si no hay usuario, redirigir a la pantalla de Login
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+        }
 
         initViews()
 
@@ -71,20 +78,24 @@ class MainActivity : AppCompatActivity() {
         val txtEmailHeader: TextView = headerView.findViewById(R.id.txt_email)
         val imageLogoHeader: ImageView = headerView.findViewById(R.id.image_perfil)
 
-        lifecycleScope.launch {
-            authViewModel.currentUser.collect { username ->
-                txtNameHeader.text = (username ?: "Usuario").toString()
-            }
-        }
+        // 🔹 Cargar datos desde SharedPreferences para persistencia
+        val sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE)
+        val username = sharedPreferences.getString("username", "Usuario")
+        val email = sharedPreferences.getString("email", "ejemplo@gmail.com")
+        val profileImageUri = sharedPreferences.getString("profileImageUri", null)
 
-        lifecycleScope.launch {
-            authViewModel.isLoggedIn.collect { isLoggedIn ->
-                navView.menu.findItem(R.id.nav_settings).isVisible = isLoggedIn
-                navView.menu.findItem(R.id.nav_anuncios).isVisible = isLoggedIn
-                navView.menu.findItem(R.id.nav_generic_list).isVisible = true
-            }
+        txtNameHeader.text = username
+        txtEmailHeader.text = email
+
+        if (profileImageUri != null) {
+            imageLogoHeader.setImageURI(Uri.parse(profileImageUri))
+        } else {
+            imageLogoHeader.setImageResource(R.mipmap.ic_launcher_foreground)
         }
     }
+
+
+
 
     private fun initViews() {
         drawerLayout = findViewById(R.id.drawer_layout)

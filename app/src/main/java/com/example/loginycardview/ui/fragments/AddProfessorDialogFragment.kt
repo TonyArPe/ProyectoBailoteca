@@ -9,7 +9,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.example.loginycardview.R
-import com.example.loginycardview.data.Professor
+import com.example.loginycardview.domain.Professor
 
 class AddProfessorDialogFragment(private val onProfessorAdded: (Professor) -> Unit) : DialogFragment() {
 
@@ -34,13 +34,15 @@ class AddProfessorDialogFragment(private val onProfessorAdded: (Professor) -> Un
 
                 if (name.isNotEmpty() && specialty.isNotEmpty() && email.isNotEmpty()) {
                     val newProfessor = Professor(
-                        R.drawable.professor_placeholder, // Imagen por defecto
-                        name,
-                        specialty,
-                        isTopRated,
-                        description,
-                        email
+                        id = "", // Firestore asignará un ID automáticamente
+                        imageUrl = "https://example.com/default_image.jpg", // 🔹 URL de imagen por defecto
+                        name = name,
+                        specialty = specialty,
+                        isTopRated = isTopRated,
+                        description = description,
+                        email = email
                     )
+
                     onProfessorAdded(newProfessor)
                     Toast.makeText(requireContext(), "Profesor añadido exitosamente", Toast.LENGTH_SHORT).show()
                 } else {

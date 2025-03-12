@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.loginycardview.databinding.FragmentProfessorBinding
 import com.example.loginycardview.domain.Professor
 import com.example.loginycardview.presentation.viewmodel.ProfessorViewModel
+import com.example.loginycardview.ui.dialogs.EditProfessorDialogFragment
 import com.example.loginycardview.utils.ProfessorAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -44,10 +45,25 @@ class ProfessorFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        professorAdapter = ProfessorAdapter()
+        professorAdapter = ProfessorAdapter(
+            onEdit = { professor -> showEditProfessorDialog(professor) }, // ✅ Ahora existe la función
+            onDelete = { professor -> professorViewModel.deleteProfessor(professor.id) } // ✅ Pasamos solo el ID
+        )
         binding.recyclerViewProfessors.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerViewProfessors.adapter = professorAdapter
     }
+
+    /**
+     * Muestra un diálogo para editar un profesor
+     */
+    private fun showEditProfessorDialog(professor: Professor) {
+        val editDialog = EditProfessorDialogFragment(professor) { updatedProfessor ->
+            professorViewModel.saveProfessor(updatedProfessor) // ✅ Guardamos el profesor actualizado
+        }
+        editDialog.show(parentFragmentManager, "EditProfessorDialog")
+    }
+
+
 
     private fun observeViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
@@ -58,13 +74,15 @@ class ProfessorFragment : Fragment() {
     }
 
     private fun createDummyProfessor() = Professor(
-        imageResId = 0,
+        id = "", // 🔹 Firestore asignará un ID automáticamente
+        imageUrl = "", // 🔹 Se puede dejar vacío o asignar una URL predeterminada
         name = "Nuevo Profesor",
         specialty = "Danza",
         isTopRated = true,
         description = "Profesor de prueba generado automáticamente.",
         email = "test@example.com"
     )
+
 
     override fun onDestroyView() {
         super.onDestroyView()
