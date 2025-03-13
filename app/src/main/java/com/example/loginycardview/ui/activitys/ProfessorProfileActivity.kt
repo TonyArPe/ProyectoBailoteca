@@ -10,23 +10,31 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
+import android.util.Log
+import android.view.View
+import android.widget.*
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.loginycardview.R
 import com.example.loginycardview.domain.Professor
+import com.example.loginycardview.domain.ScheduleItem
+import com.example.loginycardview.utils.ScheduleAdapter
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 
 class ProfessorProfileActivity : AppCompatActivity() {
 
     private lateinit var imageView: ImageView
+    private lateinit var scheduleAdapter: ScheduleAdapter
+    private lateinit var youtubePlayerView: YouTubePlayerView
     private var imageUri: Uri? = null
 
     private lateinit var cameraLauncher: ActivityResultLauncher<Intent>
@@ -41,6 +49,7 @@ class ProfessorProfileActivity : AppCompatActivity() {
         setContentView(R.layout.activity_professor_profile)
 
         imageView = findViewById(R.id.professorImageView)
+        youtubePlayerView = findViewById(R.id.youtubePlayerView)
 
         if (checkAndRequestPermissions()) {
             performActionRequiringPermissions()
@@ -93,6 +102,58 @@ class ProfessorProfileActivity : AppCompatActivity() {
                 showImagePickerOptions()
             }
         }
+
+        // Configurar horarios y video
+        setupSchedule(professor?.schedule ?: emptyList())
+        setupVideo(professor?.videoUrl ?: "")
+    }
+
+    private fun setupSchedule(schedule: List<ScheduleItem>) {
+        val scheduleTitle = findViewById<TextView>(R.id.scheduleTitle)
+        val scheduleRecyclerView = findViewById<RecyclerView>(R.id.scheduleRecyclerView)
+
+        if (schedule.isNotEmpty()) {
+            scheduleTitle.visibility = View.VISIBLE
+            scheduleRecyclerView.visibility = View.VISIBLE
+            scheduleRecyclerView.layoutManager = LinearLayoutManager(this)
+            scheduleAdapter = ScheduleAdapter(schedule)
+            scheduleRecyclerView.adapter = scheduleAdapter
+        }
+    }
+
+    private fun setupVideo(videoUrl: String) {
+        if (videoUrl.isNotEmpty()) {
+            val videoTitle = findViewById<TextView>(R.id.videoTitle)
+            videoTitle.visibility = View.VISIBLE
+            youtubePlayerView.visibility = View.VISIBLE
+
+            lifecycle.addObserver(youtubePlayerView)
+            youtubePlayerView.addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
+                override fun onReady(youTubePlayer: YouTubePlayer) {
+                    youTubePlayer.loadVideo(videoUrl, 0f)
+                }
+            })
+        }
+    }
+
+    private fun checkAndRequestPermissions(): Boolean {
+        val permissionsNeeded = mutableListOf<String>()
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            permissionsNeeded.add(Manifest.permission.CAMERA)
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            permissionsNeeded.add(Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
+
+        if (permissionsNeeded.isNotEmpty()) {
+            requestPermissions(permissionsNeeded.toTypedArray(), PERMISSIONS_REQUEST_CODE)
+            return false
+        }
+        return true
+    }
+
+    private fun performActionRequiringPermissions() {
+        Toast.makeText(this, "Permisos concedidos", Toast.LENGTH_SHORT).show()
     }
 
     private fun setupActivityResultLaunchers() {
@@ -122,60 +183,27 @@ class ProfessorProfileActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkAndRequestPermissions(): Boolean {
-        val permissionsNeeded = mutableListOf<String>()
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            permissionsNeeded.add(Manifest.permission.CAMERA)
-        }
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            permissionsNeeded.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        }
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            permissionsNeeded.add(Manifest.permission.READ_EXTERNAL_STORAGE)
-        }
-
-        if (permissionsNeeded.isNotEmpty()) {
-            requestPermissions(permissionsNeeded.toTypedArray(), PERMISSIONS_REQUEST_CODE)
-            return false
-        }
-        return true
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == PERMISSIONS_REQUEST_CODE && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
-            performActionRequiringPermissions()
-        } else {
-            Snackbar.make(imageView, "Permission Denied", Snackbar.LENGTH_LONG).show()
-        }
-    }
-
-    private fun performActionRequiringPermissions() {
-        Snackbar.make(imageView, "All permissions granted!", Snackbar.LENGTH_LONG).show()
-    }
-
     private fun showImagePickerOptions() {
-        MaterialAlertDialogBuilder(this).setTitle("Select Image").setItems(arrayOf("Camera", "Gallery")) { _, which ->
-            when (which) {
-                0 -> openCamera()
-                1 -> openGallery()
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Seleccionar imagen")
+            .setItems(arrayOf("Cámara", "Galería")) { _, which ->
+                when (which) {
+                    0 -> openCamera()
+                    1 -> openGallery()
+                }
             }
-        }.show()
+            .show()
     }
 
     private fun openCamera() {
         val contentValues = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, "new_profile_photo.jpg")
             put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
-            }
         }
         imageUri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
         imageUri?.let {
             val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
                 putExtra(MediaStore.EXTRA_OUTPUT, it)
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
             }
             cameraLauncher.launch(intent)
         }

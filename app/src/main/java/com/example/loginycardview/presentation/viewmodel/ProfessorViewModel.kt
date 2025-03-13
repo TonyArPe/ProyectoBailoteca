@@ -10,6 +10,7 @@ import com.example.loginycardview.domain.usecases.GetProfessorsUseCase
 import com.example.loginycardview.domain.usecases.SaveProfessorUseCase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,7 +28,7 @@ class ProfessorViewModel @Inject constructor(
     val professors: StateFlow<List<Professor>> get() = _professors
 
     private val firestore = FirebaseFirestore.getInstance()
-    private val storage = FirebaseStorage.getInstance().reference
+    private val storageReference: StorageReference = FirebaseStorage.getInstance().reference
 
 
     /**
@@ -148,15 +149,16 @@ class ProfessorViewModel @Inject constructor(
 
 
     fun uploadImageToStorage(imageUri: Uri, onSuccess: (String) -> Unit, onFailure: (Exception) -> Unit) {
-        val storageRef = FirebaseStorage.getInstance().reference
-        val fileName = "professors/${System.currentTimeMillis()}.jpg" // 🔹 Nombre único basado en timestamp
-        val imageRef = storageRef.child(fileName)
+        val fileRef = storageReference.child("professors/${System.currentTimeMillis()}.jpg")
 
-        imageRef.putFile(imageUri)
+        fileRef.putFile(imageUri)
             .addOnSuccessListener {
-                imageRef.downloadUrl.addOnSuccessListener { uri ->
+                fileRef.downloadUrl.addOnSuccessListener { uri ->
                     Log.d("FirebaseStorage", "Imagen subida con éxito: $uri")
-                    onSuccess(uri.toString()) // ✅ Devuelve la URL de la imagen
+                    onSuccess(uri.toString()) // 🔹 Retornamos la URL de descarga
+                }.addOnFailureListener { exception ->
+                    Log.e("FirebaseStorage", "Error al obtener URL de la imagen", exception)
+                    onFailure(exception)
                 }
             }
             .addOnFailureListener { exception ->
@@ -164,10 +166,6 @@ class ProfessorViewModel @Inject constructor(
                 onFailure(exception)
             }
     }
-
-
-
-
 
     fun deleteProfessor(professorId: String) {
         viewModelScope.launch {

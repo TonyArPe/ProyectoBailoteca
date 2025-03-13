@@ -1,98 +1,135 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:padding="16dp"
-    android:background="@color/backgroundColor"
-    android:gravity="center">
+    android:background="@color/backgroundColor">
 
-    <!-- FrameLayout para la Imagen y el FloatingActionButton -->
-    <FrameLayout
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_gravity="center"
-        android:layout_marginBottom="16dp">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center">
 
-        <!-- Imagen de Profesor -->
-        <ImageView
-            android:id="@+id/professorImageView"
+        <!-- Imagen del Profesor con FAB para cambiar imagen -->
+        <FrameLayout
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_gravity="center"
+            android:layout_marginBottom="16dp">
+
+            <ImageView
+                android:id="@+id/professorImageView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/professor_placeholder"/>
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fabChangeImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="8dp"
+                app:srcCompat="@android:drawable/ic_menu_camera" />
+        </FrameLayout>
+
+        <!-- Información del Profesor -->
+        <TextView
+            android:id="@+id/nameTextView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:contentDescription="Profesor Imagen"
-            android:scaleType="centerCrop"
-            android:src="@drawable/professor_placeholder"/>
-
-        <!-- Floating Action Button en la esquina inferior derecha -->
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fabChangeImage"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="16dp"
-            app:srcCompat="@android:drawable/ic_menu_camera" />
+            android:text="Nombre del Profesor"
+            android:textSize="22sp"
+            android:textColor="@color/primaryColor"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"/>
 
-    </FrameLayout>
+        <TextView
+            android:id="@+id/specialtyTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Especialidad: Salsa"
+            android:textSize="16sp"
+            android:textColor="@color/secondaryColor"
+            android:layout_marginBottom="8dp"/>
 
-    <!-- Nombre del Profesor -->
-    <TextView
-        android:id="@+id/nameTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Nombre del Profesor"
-        android:textSize="22sp"
-        android:textColor="@color/primaryColor"
-        android:textStyle="bold"
-        android:layout_marginBottom="8dp"/>
+        <TextView
+            android:id="@+id/descriptionTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Descripción: Instructor con experiencia"
+            android:textSize="14sp"
+            android:textColor="@android:color/darker_gray"
+            android:layout_marginBottom="16dp"/>
 
-    <!-- Especialidad -->
-    <TextView
-        android:id="@+id/specialtyTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Especialidad: Salsa"
-        android:textSize="16sp"
-        android:textColor="@color/secondaryColor"
-        android:layout_marginBottom="8dp"/>
+        <TextView
+            android:id="@+id/emailTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Email: profesor@correo.com"
+            android:textSize="14sp"
+            android:textColor="@android:color/darker_gray"
+            android:layout_marginBottom="16dp"/>
 
-    <!-- Descripción -->
-    <TextView
-        android:id="@+id/descriptionTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Descripción: Instructor con experiencia"
-        android:textSize="14sp"
-        android:textColor="@android:color/darker_gray"
-        android:layout_marginBottom="16dp"/>
+        <Button
+            android:id="@+id/contactButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Contactar Profesor"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/button_background"
+            android:textColor="@android:color/white"
+            />
 
-    <!-- Email -->
-    <TextView
-        android:id="@+id/emailTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Email: profesor@correo.com"
-        android:textSize="14sp"
-        android:textColor="@android:color/darker_gray"
-        android:layout_marginBottom="16dp"/>
+        <Button
+            android:id="@+id/backButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Volver"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/button_background"
+            android:textColor="@android:color/white"
+            />
 
-    <!-- Botón para contactar -->
-    <Button
-        android:id="@+id/contactButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:background="@drawable/button_background"
-        android:text="Contactar Profesor"
-        android:textColor="@android:color/white"
-        app:icon="@android:drawable/ic_dialog_email" />
+        <!-- Sección de Horarios -->
+        <TextView
+            android:id="@+id/scheduleTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Horarios"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/primaryColor"
+            android:visibility="gone"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"/>
 
-    <Button
-        android:id="@+id/backButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:background="@drawable/button_background"
-        android:text="Volver"
-        android:textColor="@android:color/white"
-        app:icon="@android:drawable/ic_menu_revert" />
-</LinearLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/scheduleRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            tools:listitem="@layout/item_schedule"/>
+
+        <!-- Sección de Video de Presentación -->
+        <TextView
+            android:id="@+id/videoTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Video de Presentación"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/primaryColor"
+            android:visibility="gone"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"/>
+
+        <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
+            android:id="@+id/youtubePlayerView"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:visibility="gone"/>
+    </LinearLayout>
+</ScrollView>

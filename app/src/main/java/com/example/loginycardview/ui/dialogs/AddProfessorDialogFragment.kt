@@ -33,67 +33,21 @@ class AddProfessorDialogFragment(private val onProfessorAdded: (Professor) -> Un
         val topRatedCheckbox = dialogView.findViewById<CheckBox>(R.id.checkboxTopRated)
         imageView = dialogView.findViewById(R.id.imagePreview)
         val buttonSelectImage = dialogView.findViewById<Button>(R.id.buttonSelectImage)
-        val buttonSave = dialogView.findViewById<Button>(R.id.buttonSave)
 
-        // 🔹 Permitir seleccionar una imagen opcional
+        // 🔹 Selección de imagen de la galería
         buttonSelectImage.setOnClickListener {
             val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
             startActivityForResult(intent, REQUEST_IMAGE_PICK)
         }
 
-        // 🔹 Lógica para guardar el profesor
-        buttonSave.setOnClickListener {
-            val name = nameField.text.toString().trim()
-            val specialty = specialtyField.text.toString().trim()
-            val description = descriptionField.text.toString().trim()
-            val email = emailField.text.toString().trim()
-
-            if (name.isEmpty() || specialty.isEmpty() || email.isEmpty()) {
-                Toast.makeText(requireContext(), "Rellene todos los campos obligatorios", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            Log.d("AddProfessorDialog", "Guardando profesor...")
-
-            if (selectedImageUri != null) {
-                // 🔹 Si hay imagen, primero la subimos a Firebase Storage
-                professorViewModel.uploadImageToStorage(selectedImageUri!!, { imageUrl ->
-                    Log.d("AddProfessorDialog", "Imagen subida: $imageUrl")
-                    saveProfessor(name, specialty, description, email, imageUrl, topRatedCheckbox.isChecked)
-                }, { exception ->
-                    Toast.makeText(requireContext(), "Error al subir imagen", Toast.LENGTH_SHORT).show()
-                    Log.e("FirebaseStorage", "Error al subir la imagen", exception)
-                })
-            } else {
-                // 🔹 Si NO hay imagen, guardamos el profesor con `null`
-                Log.d("AddProfessorDialog", "Guardando sin imagen")
-                saveProfessor(name, specialty, description, email, null, topRatedCheckbox.isChecked)
-            }
-        }
-
         return AlertDialog.Builder(requireContext())
             .setTitle("Añadir Profesor")
             .setView(dialogView)
+            .setPositiveButton("Guardar") { _, _ ->
+                saveProfessor(nameField, specialtyField, descriptionField, emailField, topRatedCheckbox)
+            }
             .setNegativeButton("Cancelar", null)
             .create()
-    }
-
-    // 🔹 Nueva función para guardar profesor (imagen opcional)
-    private fun saveProfessor(name: String, specialty: String, description: String, email: String, imageUrl: String?, isTopRated: Boolean) {
-        val professor = Professor(
-            id = "", // Firestore asignará ID automáticamente
-            imageUrl = imageUrl, // Puede ser `null`
-            name = name,
-            specialty = specialty,
-            isTopRated = isTopRated,
-            description = description,
-            email = email
-        )
-
-        professorViewModel.saveProfessor(professor) // 🔹 Guardar en Firestore
-        onProfessorAdded(professor) // 🔹 Notifica al fragmento principal
-        Toast.makeText(requireContext(), "Profesor agregado correctamente", Toast.LENGTH_SHORT).show()
-        dismiss()
     }
 
     // 🔹 Manejar el resultado de la selección de imagen
@@ -103,9 +57,60 @@ class AddProfessorDialogFragment(private val onProfessorAdded: (Professor) -> Un
             data?.data?.let { uri ->
                 selectedImageUri = uri
                 imageView.setImageURI(uri) // ✅ Muestra la imagen seleccionada
-                Log.d("AddProfessorDialog", "Imagen seleccionada: $uri")
             }
         }
+    }
+
+    private fun saveProfessor(
+        nameField: EditText,
+        specialtyField: EditText,
+        descriptionField: EditText,
+        emailField: EditText,
+        topRatedCheckbox: CheckBox
+    ) {
+        val name = nameField.text.toString().trim()
+        val specialty = specialtyField.text.toString().trim()
+        val description = descriptionField.text.toString().trim()
+        val email = emailField.text.toString().trim()
+        val isTopRated = topRatedCheckbox.isChecked
+
+        if (name.isEmpty() || specialty.isEmpty() || email.isEmpty()) {
+            Toast.makeText(requireContext(), "Rellene los campos obligatorios", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (selectedImageUri != null) {
+            professorViewModel.uploadImageToStorage(selectedImageUri!!, { imageUrl ->
+                saveProfessorToFirestore(name, specialty, description, email, isTopRated, imageUrl)
+            }, { exception ->
+                Toast.makeText(requireContext(), "Error al subir imagen", Toast.LENGTH_SHORT).show()
+                Log.e("FirebaseStorage", "Error al subir la imagen", exception)
+            })
+        } else {
+            saveProfessorToFirestore(name, specialty, description, email, isTopRated, "")
+        }
+    }
+
+    private fun saveProfessorToFirestore(
+        name: String,
+        specialty: String,
+        description: String,
+        email: String,
+        isTopRated: Boolean,
+        imageUrl: String
+    ) {
+        val professor = Professor(
+            id = "", // Firestore asignará ID automáticamente
+            imageUrl = imageUrl, // Puede estar vacío si no hay imagen
+            name = name,
+            specialty = specialty,
+            isTopRated = isTopRated,
+            description = description,
+            email = email
+        )
+        professorViewModel.saveProfessor(professor) // 🔹 Guardar en Firestore
+        Toast.makeText(requireContext(), "Profesor agregado", Toast.LENGTH_SHORT).show()
+        dismiss()
     }
 
     companion object {

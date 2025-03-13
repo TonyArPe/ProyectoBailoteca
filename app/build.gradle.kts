@@ -92,4 +92,7 @@ dependencies {
     // Coroutines para flujo de datos
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.1")
+
+    // Reproductor de Youtube
+    implementation ("com.pierfrancescosoffritti.androidyoutubeplayer:core:12.1.0")
 }
