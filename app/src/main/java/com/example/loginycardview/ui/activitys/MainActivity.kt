@@ -22,9 +22,11 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import android.util.Log
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -34,23 +36,30 @@ class MainActivity : AppCompatActivity() {
     private lateinit var bottomNavigation: BottomNavigationView
     private lateinit var toolbar: Toolbar
     private lateinit var sharedPref: SharedPreferences
+    private lateinit var firestore: FirebaseFirestore
 
     private val authViewModel: AuthViewModel by viewModels()
+    private var isGuestUser = false // 🔹 Variable para saber si es invitado
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         sharedPref = getSharedPreferences("UserPrefs", MODE_PRIVATE)
+        firestore = FirebaseFirestore.getInstance() // Inicializar Firestore
+        // 🔹 CORRECCIÓN: Ahora se asigna correctamente a la variable global.
+        this.isGuestUser = intent.getBooleanExtra("isGuestUser", false)
+
+        checkUserMode() // 🔹 Verificamos si el usuario es invitado
 
         // Verificar si el usuario está autenticado
         val user = FirebaseAuth.getInstance().currentUser
         if (user == null) {
-            // Si no hay usuario, redirigir a la pantalla de Login
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
         }
 
         initViews()
+        insertDefaultProfessors() // Llamamos la función aquí para cargar los profesores si no existen
 
         lifecycleScope.launch {
             authViewModel.currentUser.collectLatest { user ->
@@ -66,11 +75,97 @@ class MainActivity : AppCompatActivity() {
         setupNavigationDrawer()
         observeAuthState()
 
-
         if (savedInstanceState == null) {
-            replaceFragment(PrincipalFragment())
+            replaceFragment(PrincipalFragment.newInstance(isGuestUser)) // 🔹 Pasamos el modo invitado
         }
     }
+
+
+    private fun insertDefaultProfessors() {
+        firestore.collection("professors").get().addOnSuccessListener { snapshot ->
+            if (snapshot.isEmpty) {
+                val defaultProfessors = listOf(
+                    mapOf(
+                        "name" to "Juan Pérez",
+                        "specialty" to "Salsa",
+                        "isTopRated" to true,
+                        "description" to "Instructor profesional de salsa con más de 10 años de experiencia en escenarios internacionales.",
+                        "email" to "juan.perez@example.com"
+                    ),
+                    mapOf(
+                        "name" to "Ana Gómez",
+                        "specialty" to "Bachata",
+                        "isTopRated" to false,
+                        "description" to "Especialista en bachata moderna y tradicional, con un enfoque en la musicalidad y la técnica.",
+                        "email" to "ana.gomez@example.com"
+                    ),
+                    mapOf(
+                        "name" to "Carlos López",
+                        "specialty" to "Flamenco",
+                        "isTopRated" to true,
+                        "description" to "Bailarín flamenco reconocido internacionalmente, con una amplia trayectoria en festivales de flamenco.",
+                        "email" to "carlos.lopez@example.com"
+                    ),
+                    mapOf(
+                        "name" to "María García",
+                        "specialty" to "Tango",
+                        "isTopRated" to false,
+                        "description" to "Profesora de tango argentino con experiencia en competiciones y espectáculos internacionales.",
+                        "email" to "maria.garcia@example.com"
+                    ),
+                    mapOf(
+                        "name" to "Luis Martínez",
+                        "specialty" to "Ballet",
+                        "isTopRated" to true,
+                        "description" to "Coreógrafo y maestro de ballet clásico, con un enfoque en la técnica y el desarrollo artístico.",
+                        "email" to "luis.martinez@example.com"
+                    ),
+                    mapOf(
+                        "name" to "Isabel Ruiz",
+                        "specialty" to "Contemporáneo",
+                        "isTopRated" to true,
+                        "description" to "Especialista en danza contemporánea, con una gran experiencia en improvisación y coreografía experimental.",
+                        "email" to "isabel.ruiz@example.com"
+                    ),
+                    mapOf(
+                        "name" to "Miguel Sánchez",
+                        "specialty" to "Hip Hop",
+                        "isTopRated" to false,
+                        "description" to "Bailarín y coreógrafo de hip hop con más de 5 años enseñando en academias y campeonatos.",
+                        "email" to "miguel.sanchez@example.com"
+                    ),
+                    mapOf(
+                        "name" to "Daniel López",
+                        "specialty" to "Kizomba",
+                        "isTopRated" to true,
+                        "description" to "Instructor de kizomba con experiencia en las mejores escuelas de baile y festivales de kizomba.",
+                        "email" to "daniel.lopez@example.com"
+                    )
+                )
+
+                defaultProfessors.forEach { professor ->
+                    firestore.collection("professors").add(professor)
+                }
+                Log.d("MainActivity", "Profesores predeterminados insertados correctamente.")
+            } else {
+                Log.d("MainActivity", "Ya existen profesores en Firestore, no se insertan nuevamente.")
+            }
+        }.addOnFailureListener { e ->
+            Log.e("MainActivity", "Error al verificar los profesores en Firestore", e)
+        }
+    }
+
+    /**
+     * 🔹 Verifica si el usuario está autenticado o es invitado y ajusta UI en consecuencia
+     */
+    private fun checkUserMode() {
+        val user = FirebaseAuth.getInstance().currentUser
+        isGuestUser = user == null || user.isAnonymous // 🔹 Verifica si el usuario es anónimo
+
+        Log.d("MainActivity", "isGuestUser: $isGuestUser")
+        Log.d("MainActivity", "User ID: ${user?.uid}") // 🔹 Ver qué UID tiene el usuario actual
+    }
+
 
     private fun setupUserData() {
         val headerView = navView.getHeaderView(0)
@@ -78,7 +173,6 @@ class MainActivity : AppCompatActivity() {
         val txtEmailHeader: TextView = headerView.findViewById(R.id.txt_email)
         val imageLogoHeader: ImageView = headerView.findViewById(R.id.image_perfil)
 
-        // 🔹 Cargar datos desde SharedPreferences para persistencia
         val sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE)
         val username = sharedPreferences.getString("username", "Usuario")
         val email = sharedPreferences.getString("email", "ejemplo@gmail.com")
@@ -93,9 +187,6 @@ class MainActivity : AppCompatActivity() {
             imageLogoHeader.setImageResource(R.mipmap.ic_launcher_foreground)
         }
     }
-
-
-
 
     private fun initViews() {
         drawerLayout = findViewById(R.id.drawer_layout)
@@ -114,21 +205,25 @@ class MainActivity : AppCompatActivity() {
         toolbar.setNavigationOnClickListener { drawerLayout.openDrawer(GravityCompat.START) }
     }
 
-    // 🔹 Método restaurado para configurar el menú lateral (Navigation Drawer)
     private fun setupNavigationDrawer() {
         navView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.nav_instagram -> openInstagram()
-                R.id.nav_settings -> openSettings()
+                R.id.nav_settings -> if (!isGuestUser) openSettings() // 🔹 Solo si está logueado
                 R.id.nav_logout -> logoutUser()
-                R.id.nav_anuncios -> replaceFragment(EventFragment())
+                R.id.nav_anuncios -> if (!isGuestUser) replaceFragment(EventFragment()) // 🔹 Solo si está logueado
                 R.id.nav_generic_list -> replaceFragment(VideoFragment())
-                R.id.nav_home -> replaceFragment(PrincipalFragment())
+                R.id.nav_home -> replaceFragment(PrincipalFragment.newInstance(isGuestUser))
                 else -> showSnackbar("Función no implementada")
             }
             drawerLayout.closeDrawer(GravityCompat.START)
             true
         }
+
+        // 🔹 Ocultar opciones si es invitado
+        navView.menu.findItem(R.id.nav_settings).isVisible = !isGuestUser
+        navView.menu.findItem(R.id.nav_anuncios).isVisible = !isGuestUser
+        navView.menu.findItem(R.id.action_edit_item).isVisible = false // 🔹 Eliminar opción innecesaria
     }
 
     private fun observeAuthState() {
@@ -178,11 +273,7 @@ class MainActivity : AppCompatActivity() {
         replaceFragment(SettingsFragment())
     }
 
-
     private fun replaceFragment(fragment: androidx.fragment.app.Fragment) {
-        val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
-        if (currentFragment?.javaClass == fragment.javaClass) return
-
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .commit()

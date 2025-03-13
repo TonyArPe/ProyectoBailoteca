@@ -19,7 +19,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.example.loginycardview.R
-import com.example.loginycardview.data.Professor
+import com.example.loginycardview.domain.Professor
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
@@ -69,7 +69,7 @@ class ProfessorProfileActivity : AppCompatActivity() {
         val backButton: Button = findViewById(R.id.backButton)
         val fabChangeImage: FloatingActionButton = findViewById(R.id.fabChangeImage)
 
-        nameTextView.text = professor?.username
+        nameTextView.text = professor?.name
         specialtyTextView.text = "Especialidad: ${professor?.specialty}"
         descriptionTextView.text = "Descripción: ${professor?.description}"
         emailTextView.text = "Email: ${professor?.email}"
@@ -79,7 +79,7 @@ class ProfessorProfileActivity : AppCompatActivity() {
                 type = "message/rfc822"
                 putExtra(Intent.EXTRA_EMAIL, arrayOf(professor?.email))
                 putExtra(Intent.EXTRA_SUBJECT, "Consulta sobre clases")
-                putExtra(Intent.EXTRA_TEXT, "Hola ${professor?.username}, estoy interesado en tus clases de ${professor?.specialty}.")
+                putExtra(Intent.EXTRA_TEXT, "Hola ${professor?.name}, estoy interesado en tus clases de ${professor?.specialty}.")
             }
             startActivity(Intent.createChooser(intent, "Enviar correo"))
         }

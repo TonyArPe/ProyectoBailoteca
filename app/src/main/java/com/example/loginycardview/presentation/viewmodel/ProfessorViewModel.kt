@@ -1,5 +1,6 @@
 package com.example.loginycardview.presentation.viewmodel
 
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,6 +9,7 @@ import com.example.loginycardview.domain.Professor
 import com.example.loginycardview.domain.usecases.GetProfessorsUseCase
 import com.example.loginycardview.domain.usecases.SaveProfessorUseCase
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,6 +27,8 @@ class ProfessorViewModel @Inject constructor(
     val professors: StateFlow<List<Professor>> get() = _professors
 
     private val firestore = FirebaseFirestore.getInstance()
+    private val storage = FirebaseStorage.getInstance().reference
+
 
     /**
      * Cargar profesores desde Firestore y actualizar estado.
@@ -131,12 +135,39 @@ class ProfessorViewModel @Inject constructor(
      * Guardar un profesor en Firestore.
      */
     fun saveProfessor(professor: Professor) {
-        val docRef = firestore.collection("professors").document()
-        val professorWithId = professor.copy(id = docRef.id)
-        docRef.set(professorWithId)
-            .addOnSuccessListener { Log.d("ProfessorViewModel", "Profesor guardado") }
-            .addOnFailureListener { e -> Log.e("ProfessorViewModel", "Error al guardar profesor", e) }
+        val db = FirebaseFirestore.getInstance()
+        db.collection("professors")
+            .add(professor)
+            .addOnSuccessListener {
+                Log.d("Firestore", "Profesor guardado con éxito")
+            }
+            .addOnFailureListener { e ->
+                Log.e("Firestore", "Error al guardar profesor", e)
+            }
     }
+
+
+    fun uploadImageToStorage(imageUri: Uri, onSuccess: (String) -> Unit, onFailure: (Exception) -> Unit) {
+        val storageRef = FirebaseStorage.getInstance().reference
+        val fileName = "professors/${System.currentTimeMillis()}.jpg" // 🔹 Nombre único basado en timestamp
+        val imageRef = storageRef.child(fileName)
+
+        imageRef.putFile(imageUri)
+            .addOnSuccessListener {
+                imageRef.downloadUrl.addOnSuccessListener { uri ->
+                    Log.d("FirebaseStorage", "Imagen subida con éxito: $uri")
+                    onSuccess(uri.toString()) // ✅ Devuelve la URL de la imagen
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.e("FirebaseStorage", "Error al subir la imagen", exception)
+                onFailure(exception)
+            }
+    }
+
+
+
+
 
     fun deleteProfessor(professorId: String) {
         viewModelScope.launch {

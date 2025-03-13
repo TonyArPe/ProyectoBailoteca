@@ -1,39 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="16dp">
 
+    <!-- Vista previa de la imagen -->
+    <ImageView
+        android:id="@+id/imagePreview"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_placeholder" />
+
+    <!-- Botón para seleccionar imagen -->
+    <Button
+        android:id="@+id/buttonSelectImage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Seleccionar Imagen"
+        android:layout_marginTop="8dp" />
+
+    <Button
+        android:id="@+id/buttonSave"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Guardar Profesor" />
+
+    <!-- Campo de Nombre -->
     <EditText
         android:id="@+id/editName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Nombre"
-        android:inputType="textPersonName" />
+        android:hint="Nombre" />
 
+    <!-- Campo de Especialidad -->
     <EditText
         android:id="@+id/editSpecialty"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Especialidad"
-        android:inputType="text" />
+        android:hint="Especialidad" />
 
+    <!-- Campo de Descripción -->
     <EditText
         android:id="@+id/editDescription"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Descripción"
-        android:inputType="textMultiLine"
-        android:lines="3"
-        android:gravity="top" />
+        android:hint="Descripción" />
 
+    <!-- Campo de Email -->
     <EditText
         android:id="@+id/editEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Correo electrónico"
-        android:inputType="textEmailAddress" />
+        android:hint="Correo electrónico" />
 
+    <!-- Checkbox para destacar profesor -->
     <CheckBox
         android:id="@+id/checkboxTopRated"
         android:layout_width="wrap_content"

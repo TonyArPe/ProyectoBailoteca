@@ -23,6 +23,17 @@ class ProfessorFragment : Fragment() {
     private val binding get() = _binding!!
     private val professorViewModel: ProfessorViewModel by viewModels()
     private lateinit var professorAdapter: ProfessorAdapter
+    private var isGuestUser = false // 🔹 Variable para saber si es invitado
+
+    companion object {
+        fun newInstance(isGuestUser: Boolean): ProfessorFragment {
+            val fragment = ProfessorFragment()
+            val args = Bundle()
+            args.putBoolean("isGuestUser", isGuestUser)
+            fragment.arguments = args
+            return fragment
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,23 +46,33 @@ class ProfessorFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupRecyclerView()
+        // 🔹 Obtener el valor de isGuestUser desde los argumentos
+        isGuestUser = arguments?.getBoolean("isGuestUser", false) ?: false
+
+        setupRecyclerView(isGuestUser)
         observeViewModel()
         professorViewModel.loadProfessors()
 
-        binding.btnAddProfessor.setOnClickListener {
-            professorViewModel.saveProfessor(createDummyProfessor())
+        // 🔹 Si el usuario es invitado, ocultamos el botón de añadir profesor
+        if (isGuestUser) {
+            binding.btnAddProfessor.visibility = View.GONE
+        } else {
+            binding.btnAddProfessor.setOnClickListener {
+                professorViewModel.saveProfessor(createDummyProfessor())
+            }
         }
     }
 
-    private fun setupRecyclerView() {
+    private fun setupRecyclerView(isGuestUser: Boolean) {  // 🔹 Aceptamos el parámetro
         professorAdapter = ProfessorAdapter(
-            onEdit = { professor -> showEditProfessorDialog(professor) }, // ✅ Ahora existe la función
-            onDelete = { professor -> professorViewModel.deleteProfessor(professor.id) } // ✅ Pasamos solo el ID
+            onEdit = { professor -> showEditProfessorDialog(professor) },
+            onDelete = { professor -> professorViewModel.deleteProfessor(professor.id) },
+            isGuestUser = isGuestUser // 🔹 Pasamos el valor correctamente
         )
         binding.recyclerViewProfessors.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerViewProfessors.adapter = professorAdapter
     }
+
 
     /**
      * Muestra un diálogo para editar un profesor

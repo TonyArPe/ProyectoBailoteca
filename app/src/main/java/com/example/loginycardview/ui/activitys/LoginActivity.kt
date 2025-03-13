@@ -59,9 +59,13 @@ class LoginActivity : AppCompatActivity() {
 
         binding.buttonGuestLogin.setOnClickListener {
             authViewModel.loginAsGuest {
-                navigateToMain()
+                val intent = Intent(this, MainActivity::class.java)
+                intent.putExtra("isGuestUser", true) // 🔹 Pasamos la info de que es invitado
+                startActivity(intent)
+                finish()
             }
         }
+
     }
 
     private fun navigateToMain() {

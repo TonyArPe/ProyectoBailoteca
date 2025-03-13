@@ -2,7 +2,12 @@ package com.example.loginycardview.ui.fragments
 
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import android.widget.PopupWindow
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -12,8 +17,10 @@ import com.example.loginycardview.R
 import com.example.loginycardview.databinding.FragmentPrincipalBinding
 import com.example.loginycardview.domain.Professor
 import com.example.loginycardview.presentation.viewmodel.ProfessorViewModel
+import com.example.loginycardview.ui.dialogs.AddProfessorDialogFragment
 import com.example.loginycardview.ui.dialogs.EditProfessorDialogFragment
 import com.example.loginycardview.utils.ProfessorAdapter
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -25,23 +32,60 @@ class PrincipalFragment : Fragment(R.layout.fragment_principal) {
     private var _binding: FragmentPrincipalBinding? = null
     private val binding get() = _binding!!
 
+    private var popupWindow: PopupWindow? = null // PopupWindow para el submenú FAB
+    private var isGuestUser = false // 🔹 Variable para saber si es invitado
+
+    companion object {
+        fun newInstance(isGuestUser: Boolean): PrincipalFragment {
+            val fragment = PrincipalFragment()
+            val args = Bundle()
+            args.putBoolean("isGuestUser", isGuestUser)
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentPrincipalBinding.bind(view)
 
+        isGuestUser = arguments?.getBoolean("isGuestUser", false) ?: false // 🔹 Obtenemos el valor de isGuestUser correctamente
+        setupRecyclerView() // 🔹 Configuramos el RecyclerView
+        setupFabMenu() // 🔹 Ahora el FAB tendrá la funcionalidad activada al inicio
+
         requireActivity().title = "La Bailoteca"
 
-        // Configurar RecyclerView
+        checkUserMode() // 🔹 Verificamos si el usuario está logueado
+
+        observeProfessors()
+        professorViewModel.loadProfessors()
+    }
+
+    /**
+     * Método para comprobar si el usuario está en modo invitado
+     */
+    private fun checkUserMode() {
+        val user = FirebaseAuth.getInstance().currentUser
+        isGuestUser = user == null || user.isAnonymous // 🔹 Verifica si es usuario anónimo
+
+        Log.d("PrincipalFragment", "isGuestUser: $isGuestUser")
+
+        if (isGuestUser) {
+            binding.fabAdd.visibility = View.GONE // 🔹 Ocultamos el FAB si es invitado
+        } else {
+            binding.fabAdd.visibility = View.VISIBLE // 🔹 Nos aseguramos de que reaparezca si el usuario está logueado
+        }
+    }
+
+
+    private fun setupRecyclerView() {
+        professorAdapter = ProfessorAdapter(
+            onEdit = { professor -> showEditProfessorDialog(professor) },
+            onDelete = { professor -> professorViewModel.deleteProfessor(professor.id) },
+            isGuestUser = isGuestUser // 🔹 Pasamos el estado correctamente al adapter
+        )
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        professorAdapter = ProfessorAdapter(::showEditProfessorDialog, ::deleteProfessor)
         binding.recyclerView.adapter = professorAdapter
-
-        observeProfessors() // 🔹 Observamos los cambios en Firestore
-
-        professorViewModel.loadProfessors() // 🔹 Cargamos los profesores al iniciar
-
-        // Botón para agregar un nuevo profesor
-        binding.fabAdd.setOnClickListener { showAddProfessorDialog() }
     }
 
     private fun observeProfessors() {
@@ -50,18 +94,66 @@ class PrincipalFragment : Fragment(R.layout.fragment_principal) {
                 if (professors.isNotEmpty()) {
                     professorAdapter.updateProfessors(professors)
                 } else {
-                    Log.e("PrincipalFragment", "No se encontraron profesores en Firestore")
+                    Toast.makeText(requireContext(), "No se encontraron profesores", Toast.LENGTH_SHORT).show()
                 }
             }
         }
     }
 
+    private fun setupFabMenu() {
+        if (isGuestUser) {
+            binding.fabAdd.visibility = View.GONE // 🔹 Ocultamos el FAB si es invitado
+            return
+        }
+
+        binding.fabAdd.visibility = View.VISIBLE // 🔹 Aseguramos que reaparezca si el usuario está logueado
+
+        binding.fabAdd.setOnClickListener {
+            showFabMenu() // ✅ Esto debe ejecutarse cuando se hace clic
+        }
+    }
+
+
+    private fun showFabMenu() {
+        if (popupWindow != null && popupWindow!!.isShowing) {
+            popupWindow!!.dismiss()
+            return
+        }
+
+        val popupView = layoutInflater.inflate(R.layout.layout_bottom_navigation, null)
+
+        popupWindow = PopupWindow(
+            popupView,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            true
+        ).apply {
+            elevation = 10f
+            isFocusable = true
+            isOutsideTouchable = true
+        }
+
+        val addProfessorOption: TextView = popupView.findViewById(R.id.add_professor_option)
+        val scheduleClassOption: TextView = popupView.findViewById(R.id.schedule_class_option)
+
+        addProfessorOption.setOnClickListener {
+            popupWindow?.dismiss()
+            showAddProfessorDialog()
+        }
+
+        scheduleClassOption.setOnClickListener {
+            popupWindow?.dismiss()
+        }
+
+        popupWindow?.showAtLocation(binding.fabAdd, Gravity.NO_GRAVITY, binding.fabAdd.x.toInt(), (binding.fabAdd.y - 250).toInt())
+    }
+
+
     private fun showAddProfessorDialog() {
         val addDialog = AddProfessorDialogFragment { newProfessor ->
             val professor = Professor(
-                id = "", // Firestore asignará un ID automáticamente
-                imageUrl = newProfessor.imageUrl,
-                name = newProfessor.name,
+                id = "",
+                imageUrl = newProfessor.imageUrl.takeIf { !it.isNullOrBlank() }, // 🔹 Guarda `null` si está vacío                name = newProfessor.name,
                 specialty = newProfessor.specialty,
                 isTopRated = newProfessor.isTopRated,
                 description = newProfessor.description,

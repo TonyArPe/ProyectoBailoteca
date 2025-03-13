@@ -14,10 +14,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.loginycardview.R
 import com.example.loginycardview.domain.Professor
+import com.example.loginycardview.ui.activitys.ProfessorProfileActivity
 
 class ProfessorAdapter(
     private val onEdit: (Professor) -> Unit,
-    private val onDelete: (Professor) -> Unit
+    private val onDelete: (Professor) -> Unit,
+    private val isGuestUser: Boolean // 🔹 Se añade este parámetro para validar si el usuario es invitado
 ) : RecyclerView.Adapter<ProfessorAdapter.ProfessorViewHolder>() {
 
     private val professorList = mutableListOf<Professor>()
@@ -30,7 +32,7 @@ class ProfessorAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProfessorViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_cardview, parent, false)
-        return ProfessorViewHolder(view)
+        return ProfessorViewHolder(view, isGuestUser) // 🔹 Pasamos isGuestUser al ViewHolder
     }
 
     override fun onBindViewHolder(holder: ProfessorViewHolder, position: Int) {
@@ -40,7 +42,7 @@ class ProfessorAdapter(
 
     override fun getItemCount(): Int = professorList.size
 
-    class ProfessorViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class ProfessorViewHolder(itemView: View, private val isGuestUser: Boolean) : RecyclerView.ViewHolder(itemView) {
         private val imageView: ImageView = itemView.findViewById(R.id.professorImage)
         private val nameTextView: TextView = itemView.findViewById(R.id.professorName)
         private val specialtyTextView: TextView = itemView.findViewById(R.id.professorSpecialty)
@@ -51,16 +53,16 @@ class ProfessorAdapter(
 
         fun bind(professor: Professor, onEdit: (Professor) -> Unit, onDelete: (Professor) -> Unit) {
             Glide.with(itemView.context)
-                .load(professor.imageUrl) // 🔹 Cargar imagen desde Firestore
-                .placeholder(R.drawable.ic_placeholder) // Imagen de carga por defecto
-                .error(R.drawable.ic_placeholder) // Si falla la carga
+                .load(professor.imageUrl ?: R.drawable.ic_placeholder) // 🔹 Si `null`, usa imagen por defecto
+                .placeholder(R.drawable.ic_placeholder)
+                .error(R.drawable.ic_placeholder)
                 .into(imageView)
 
             nameTextView.text = professor.name
             specialtyTextView.text = professor.specialty
             ratingBar.rating = if (professor.isTopRated) 5.0f else 3.0f // 🔹 5 estrellas si es destacado, 3 si no
 
-            // Botón de contacto (a futuro podría abrir email)
+            // Botón de contacto (envío de correo)
             contactButton.setOnClickListener {
                 val intent = Intent(Intent.ACTION_SENDTO).apply {
                     data = Uri.parse("mailto:${professor.email}") // Se usa `mailto:` para abrir el email
@@ -75,12 +77,23 @@ class ProfessorAdapter(
                 }
             }
 
+            // 🔹 **Ocultar botones si es usuario invitado**
+            if (isGuestUser) {
+                editButton.visibility = View.GONE
+                deleteButton.visibility = View.GONE
+            } else {
+                // 🔹 Si es usuario normal, permitir editar y eliminar
+                editButton.setOnClickListener { onEdit(professor) }
+                deleteButton.setOnClickListener { onDelete(professor) }
+            }
 
-            // Botón de editar profesor
-            editButton.setOnClickListener { onEdit(professor) }
-
-            // Botón de eliminar profesor
-            deleteButton.setOnClickListener { onDelete(professor) }
+            // 📌 **Abrir perfil del profesor al hacer clic en el item**
+            itemView.setOnClickListener {
+                val intent = Intent(itemView.context, ProfessorProfileActivity::class.java).apply {
+                    putExtra("professor", professor)
+                }
+                itemView.context.startActivity(intent)
+            }
         }
     }
 }

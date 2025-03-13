@@ -4,6 +4,7 @@ plugins {
     id("com.google.gms.google-services")
     id("dagger.hilt.android.plugin") // Hilt para Inyección de Dependencias
     id("kotlin-kapt")
+    id ("kotlin-parcelize")
 }
 
 android {
@@ -71,6 +72,7 @@ dependencies {
     implementation("com.google.android.gms:play-services-auth:21.0.0")
     implementation(platform("com.google.firebase:firebase-bom:32.8.0")) // 🔹 Mantiene todas las versiones actualizadas
     implementation ("com.google.firebase:firebase-firestore-ktx") // 🔹 Firestore Database
+    implementation("com.google.firebase:firebase-storage-ktx")
 
 
     // Dependencia para Navigation, si no está incluida en libs
